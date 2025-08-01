@@ -1,0 +1,21 @@
+{
+  "name": "coconut-cloud-dashboard",
+  "version": "1.0.0",
+  "description": "FREE Cloud Dashboard for Coconut Disease Detection",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "cloudinary": "^1.41.0",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
