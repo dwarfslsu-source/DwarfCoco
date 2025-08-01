@@ -19,8 +19,11 @@ export default function Dashboard() {
     try {
       const response = await fetch('/api/scans');
       const data = await response.json();
-      setScans(data);
-      calculateStats(data);
+      
+      // Handle the API response structure
+      const scanArray = data.scans || data || [];
+      setScans(scanArray);
+      calculateStats(scanArray);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching scans:', error);
@@ -31,10 +34,10 @@ export default function Dashboard() {
   const calculateStats = (scanData) => {
     const total = scanData.length;
     const healthy = scanData.filter(s => 
-      s.disease_detected.toLowerCase().includes('healthy')
+      (s.disease_detected || '').toLowerCase().includes('healthy')
     ).length;
     const critical = scanData.filter(s => 
-      s.severity_level.includes('Critical') || s.severity_level.includes('🔴')
+      (s.severity_level || '').includes('Critical') || (s.severity_level || '').includes('🔴')
     ).length;
     const diseased = total - healthy;
 
@@ -42,6 +45,7 @@ export default function Dashboard() {
   };
 
   const getSeverityColor = (severity) => {
+    if (!severity) return '#757575';
     if (severity.includes('🟢')) return '#4CAF50';
     if (severity.includes('🟡')) return '#FF9800';
     if (severity.includes('🟠')) return '#FF5722';
@@ -50,6 +54,8 @@ export default function Dashboard() {
   };
 
   const getDiseaseEmoji = (disease) => {
+    if (!disease) return '🥥';
+    
     const diseaseMap = {
       'healthy': '✅',
       'leaf_spot': '🟤',
@@ -265,21 +271,21 @@ export default function Dashboard() {
                       alignItems: 'center',
                       gap: '10px'
                     }}>
-                      <span>{getDiseaseEmoji(scan.disease_detected)}</span>
-                      <span>{scan.disease_detected.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                      <span>{getDiseaseEmoji(scan.disease_detected || 'unknown')}</span>
+                      <span>{(scan.disease_detected || 'Unknown').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
                     </div>
                     <div style={{ color: '#666', marginBottom: '8px', fontSize: '0.95em' }}>
-                      📅 {new Date(scan.timestamp).toLocaleString()}
+                      📅 {new Date(scan.timestamp || Date.now()).toLocaleString()}
                     </div>
                     <div style={{ color: '#666', marginBottom: '8px', fontSize: '0.95em' }}>
-                      🎯 Confidence: <strong>{Math.round(scan.confidence * 100)}%</strong>
+                      🎯 Confidence: <strong>{Math.round(scan.confidence || 0)}%</strong>
                     </div>
                     <div style={{ 
-                      color: getSeverityColor(scan.severity_level),
+                      color: getSeverityColor(scan.severity_level || '🟢 Low Risk'),
                       fontWeight: 'bold',
                       fontSize: '1em'
                     }}>
-                      {scan.severity_level}
+                      {scan.severity_level || '🟢 Low Risk'}
                     </div>
                   </div>
 
