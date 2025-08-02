@@ -71,80 +71,6 @@ export default function Dashboard() {
     return '#6B7280';
   };
 
-  const deleteScan = async (scanId) => {
-    if (!confirm('Are you sure you want to delete this scan? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/delete-scan?id=${scanId}`, {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        // Remove the deleted scan from state
-        setScans(prevScans => prevScans.filter(scan => scan.id !== scanId));
-        
-        // Recalculate stats
-        const updatedScans = scans.filter(scan => scan.id !== scanId);
-        calculateStats(updatedScans);
-        
-        alert('✅ Scan deleted successfully!');
-      } else {
-        throw new Error(result.message || 'Failed to delete scan');
-      }
-    } catch (error) {
-      console.error('Error deleting scan:', error);
-      alert('❌ Failed to delete scan. Please try again.');
-    }
-  };
-
-  const clearAllScans = async () => {
-    if (!confirm(`Are you sure you want to delete ALL ${scans.length} scans? This action cannot be undone and will free up storage space.`)) {
-      return;
-    }
-
-    const confirmAgain = confirm('⚠️ FINAL WARNING: This will permanently delete all scan data. Continue?');
-    if (!confirmAgain) return;
-
-    try {
-      let successCount = 0;
-      let errorCount = 0;
-
-      // Delete all scans one by one
-      for (const scan of scans) {
-        try {
-          const response = await fetch(`/api/delete-scan?id=${scan.id}`, {
-            method: 'DELETE',
-          });
-          
-          if (response.ok) {
-            successCount++;
-          } else {
-            errorCount++;
-          }
-        } catch (error) {
-          errorCount++;
-        }
-      }
-
-      // Clear the scans from state
-      setScans([]);
-      setStats({ total: 0, healthy: 0, diseased: 0, critical: 0 });
-
-      if (errorCount === 0) {
-        alert(`✅ Successfully deleted all ${successCount} scans! Storage space freed up.`);
-      } else {
-        alert(`⚠️ Deleted ${successCount} scans. ${errorCount} scans could not be deleted.`);
-      }
-    } catch (error) {
-      console.error('Error clearing all scans:', error);
-      alert('❌ Failed to clear all scans. Please try again.');
-    }
-  };
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -183,8 +109,8 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Dwarf Coconut Disease Detector</title>
-        <meta name="description" content="AI-powered dwarf coconut disease detection dashboard" />
+        <title>Coconut Health Monitor</title>
+        <meta name="description" content="AI-powered coconut disease detection dashboard" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥥</text></svg>" />
       </Head>
 
@@ -192,8 +118,8 @@ export default function Dashboard() {
         {/* Header */}
         <header className="header">
           <div className="header-content">
-            <h1>🌴 Dwarf Coconut Disease Detector</h1>
-            <p>AI-Powered Disease Detection Dashboard</p>
+            <h1>🥥 Coconut Health</h1>
+            <p>AI Disease Detection Dashboard</p>
           </div>
         </header>
 
@@ -219,18 +145,7 @@ export default function Dashboard() {
 
         {/* Recent Scans */}
         <div className="scans-section">
-          <div className="scans-header">
-            <h2>Recent Disease Scans</h2>
-            {scans.length > 0 && (
-              <button 
-                className="clear-all-btn"
-                onClick={() => clearAllScans()}
-                title="Delete all scans"
-              >
-                🗑️ Clear All ({scans.length})
-              </button>
-            )}
-          </div>
+          <h2>Recent Disease Scans</h2>
           {scans.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">📱</div>
@@ -249,13 +164,6 @@ export default function Dashboard() {
                         e.target.src = '/api/placeholder/150/150';
                       }}
                     />
-                    <button 
-                      className="delete-btn"
-                      onClick={() => deleteScan(scan.id)}
-                      title="Delete scan"
-                    >
-                      🗑️
-                    </button>
                   </div>
                   <div className="scan-content">
                     <div className="scan-disease">
@@ -374,43 +282,6 @@ export default function Dashboard() {
             text-align: center;
           }
 
-          .scans-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-          }
-
-          .scans-header h2 {
-            margin: 0;
-            text-align: left;
-          }
-
-          .clear-all-btn {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
-          }
-
-          .clear-all-btn:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-          }
-
-          .clear-all-btn:active {
-            transform: translateY(0);
-          }
-
           .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -467,39 +338,6 @@ export default function Dashboard() {
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
-          }
-
-          .delete-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(239, 68, 68, 0.9);
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: white;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-          }
-
-          .delete-btn:hover {
-            background: rgba(220, 38, 38, 0.95);
-            transform: scale(1);
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-          }
-
-          .scan-card:hover .delete-btn {
-            opacity: 1;
-            transform: scale(1);
           }
 
           .scan-card:hover .scan-image img {
