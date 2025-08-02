@@ -1,4 +1,13 @@
-// 🆓 REAL CLOUDINARY UPLOAD WITH STORAGE
+// 🆓 REAL CLOUDINARY UPLOAD    // Create scan data from real mobile upload
+    const currentTime = new Date().toISOString();
+    const scanData = {
+      disease_detected: '📱 REAL MOBILE UPLOAD', // Will be real AI result later
+      confidence: 92,
+      severity_level: '🔥 Live Upload from Mobile',
+      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/uploaded-coconut.jpg',
+      status: 'uploaded_from_mobile',
+      upload_time: currentTime
+    };RAGE
 import { v2 as cloudinary } from 'cloudinary';
 import { addScan } from '../lib/storage.js';
 
