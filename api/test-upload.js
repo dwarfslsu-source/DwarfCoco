@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     return res.status(200).json({ 
       success: true, 
-      message: 'Test upload endpoint is working!',
+      message: 'Test upload endpoint is working! v2.0 - Mobile data extraction enabled',
       method: 'GET',
       timestamp: new Date().toISOString()
     });
