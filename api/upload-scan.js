@@ -6,9 +6,9 @@ import formidable from 'formidable';
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: 'dpezf22nd',
+  api_key: '779179365417543',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'your-secret-here',
 });
 
 export const config = {
