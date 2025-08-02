@@ -7,7 +7,7 @@ import { v2 as cloudinary } from 'cloudinary';
 cloudinary.config({
   cloud_name: 'dpezf22nd',
   api_key: '779179365417543',
-  api_secret: 'k_YdLV_fQeF8Lj4l6X9P0M2N8K7Q'
+  api_secret: 'FwvqVHp_cPMaFp1_PrVV5wwDkJE'
 });
 
 export const config = {
