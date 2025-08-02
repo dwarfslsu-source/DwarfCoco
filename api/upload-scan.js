@@ -33,6 +33,18 @@ export default async function handler(req, res) {
 
   try {
     console.log('📱 Upload request received from mobile app');
+    console.log('🔍 Request method:', req.method);
+    console.log('🔍 Content-Type:', req.headers['content-type']);
+    
+    // Add basic error handling for empty requests
+    if (!req.body && !req.headers['content-type']) {
+      console.log('❌ No body or content-type found');
+      return res.status(400).json({
+        success: false,
+        message: 'No data received',
+        debug: 'Missing body or content-type'
+      });
+    }
     
     // Parse multipart form data with formidable
     const form = formidable({
@@ -41,10 +53,19 @@ export default async function handler(req, res) {
       maxFileSize: 10 * 1024 * 1024, // 10MB limit
     });
     
-    const [fields, files] = await form.parse(req);
-    
-    console.log('📤 Received files:', Object.keys(files));
-    console.log('📋 Received fields:', Object.keys(fields));
+    let fields, files;
+    try {
+      [fields, files] = await form.parse(req);
+      console.log('📤 Received files:', Object.keys(files));
+      console.log('📋 Received fields:', Object.keys(fields));
+    } catch (parseError) {
+      console.error('❌ Form parsing error:', parseError);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to parse form data',
+        error: parseError.message
+      });
+    }
     
     let imageUrl = 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/uploaded-coconut.jpg'; // fallback
     
@@ -107,9 +128,15 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('❌ Upload error:', error);
+    console.error('❌ Error stack:', error.stack);
     return res.status(500).json({
       success: false,
-      message: 'Server error: ' + error.message
+      message: 'Server error: ' + error.message,
+      error_type: error.name,
+      debug_info: {
+        timestamp: new Date().toISOString(),
+        error_message: error.message
+      }
     });
   }
 }
