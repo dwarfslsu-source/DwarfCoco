@@ -77,7 +77,9 @@ export default async function handler(req, res) {
     
     // Run AI disease detection on the uploaded image
     console.log('🔬 Running AI disease analysis...');
+    console.log('📸 Image URL for analysis:', imageUrl);
     const aiResults = await analyzeImage(imageUrl);
+    console.log('🧠 AI Results:', aiResults);
     
     const scanData = {
       disease_detected: aiResults.disease_detected,
