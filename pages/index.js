@@ -4,6 +4,8 @@ import Head from 'next/head';
 export default function Dashboard() {
   const [scans, setScans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedScan, setSelectedScan] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     healthy: 0,
@@ -69,6 +71,16 @@ export default function Dashboard() {
     if (level.includes('high')) return '#EF4444';
     if (level.includes('critical')) return '#DC2626';
     return '#6B7280';
+  };
+
+  const openScanDetails = (scan) => {
+    setSelectedScan(scan);
+    setShowModal(true);
+  };
+
+  const closeScanDetails = () => {
+    setSelectedScan(null);
+    setShowModal(false);
   };
 
   const deleteScan = async (scanId) => {
@@ -205,7 +217,7 @@ export default function Dashboard() {
             </div>
             <div className="header-actions">
               <a 
-                href="https://www.mediafire.com/file/5r1qdx7c7az7t2k/DwarfCoconut-RequestDebug.apk/file"
+                href="https://www.mediafire.com/file/heiwi0erztaai6q/app-debug.apk/file"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="download-btn"
@@ -259,7 +271,7 @@ export default function Dashboard() {
           ) : (
             <div className="scans-grid">
               {scans.slice(0, 12).map((scan, index) => (
-                <div key={scan.id || index} className="scan-card">
+                <div key={scan.id || index} className="scan-card" onClick={() => openScanDetails(scan)}>
                   <div className="scan-image">
                     <img 
                       src={scan.image_url || '/api/placeholder/150/150'} 
@@ -270,7 +282,10 @@ export default function Dashboard() {
                     />
                     <button 
                       className="delete-btn"
-                      onClick={() => deleteScan(scan.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteScan(scan.id);
+                      }}
                       title="Delete scan"
                     >
                       🗑️
@@ -292,12 +307,111 @@ export default function Dashboard() {
                     <div className="scan-date">
                       {formatDate(scan.timestamp || scan.created_at)}
                     </div>
+                    <div className="click-hint">
+                      👆 Click for details
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Detailed Scan Modal */}
+        {showModal && selectedScan && (
+          <div className="modal-overlay" onClick={closeScanDetails}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>🌴 Scan Details</h2>
+                <button className="modal-close" onClick={closeScanDetails}>✕</button>
+              </div>
+              
+              <div className="modal-body">
+                <div className="modal-image-section">
+                  <img 
+                    src={selectedScan.image_url || '/api/placeholder/300/300'} 
+                    alt="Detailed coconut scan"
+                    onError={(e) => {
+                      e.target.src = '/api/placeholder/300/300';
+                    }}
+                  />
+                </div>
+                
+                <div className="modal-details-section">
+                  <div className="detail-row">
+                    <span className="detail-label">🦠 Disease Detected:</span>
+                    <span className="detail-value">{selectedScan.disease_detected || 'Unknown'}</span>
+                  </div>
+                  
+                  <div className="detail-row">
+                    <span className="detail-label">📊 Confidence Level:</span>
+                    <span className="detail-value confidence-bar">
+                      <div className="confidence-percentage">{selectedScan.confidence}%</div>
+                      <div className="confidence-progress">
+                        <div 
+                          className="confidence-fill" 
+                          style={{ width: `${selectedScan.confidence}%` }}
+                        ></div>
+                      </div>
+                    </span>
+                  </div>
+                  
+                  <div className="detail-row">
+                    <span className="detail-label">⚠️ Severity Level:</span>
+                    <span 
+                      className="detail-value severity-badge"
+                      style={{ 
+                        backgroundColor: getSeverityColor(selectedScan.severity_level),
+                        color: 'white'
+                      }}
+                    >
+                      {selectedScan.severity_level || 'Unknown severity'}
+                    </span>
+                  </div>
+                  
+                  <div className="detail-row">
+                    <span className="detail-label">📅 Scan Date:</span>
+                    <span className="detail-value">{formatDate(selectedScan.timestamp || selectedScan.created_at)}</span>
+                  </div>
+                  
+                  <div className="detail-row">
+                    <span className="detail-label">🔬 Analysis ID:</span>
+                    <span className="detail-value analysis-id">{selectedScan.id || 'N/A'}</span>
+                  </div>
+                  
+                  {selectedScan.recommendations && (
+                    <div className="detail-row recommendations">
+                      <span className="detail-label">💡 Recommendations:</span>
+                      <span className="detail-value">{selectedScan.recommendations}</span>
+                    </div>
+                  )}
+                  
+                  {selectedScan.treatment && (
+                    <div className="detail-row treatment">
+                      <span className="detail-label">🏥 Treatment:</span>
+                      <span className="detail-value">{selectedScan.treatment}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="modal-footer">
+                <button className="modal-btn secondary" onClick={closeScanDetails}>
+                  Close
+                </button>
+                <button 
+                  className="modal-btn danger" 
+                  onClick={() => {
+                    deleteScan(selectedScan.id);
+                    closeScanDetails();
+                  }}
+                >
+                  🗑️ Delete Scan
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <style jsx>{`
           .dashboard {
@@ -607,6 +721,209 @@ export default function Dashboard() {
             color: #9ca3af;
           }
 
+          .click-hint {
+            font-size: 0.7rem;
+            color: #3b82f6;
+            margin-top: 0.5rem;
+            opacity: 0.7;
+            text-align: center;
+            font-style: italic;
+          }
+
+          .scan-card {
+            cursor: pointer;
+          }
+
+          /* Modal Styles */
+          .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+          }
+
+          .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+          }
+
+          .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f3f4f6;
+          }
+
+          .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1f2937;
+          }
+
+          .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+          }
+
+          .modal-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+          }
+
+          .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+          }
+
+          .modal-image-section img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+          }
+
+          .modal-details-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+
+          .detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+
+          .detail-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+          }
+
+          .detail-value {
+            color: #6b7280;
+            font-size: 1rem;
+          }
+
+          .confidence-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+
+          .confidence-percentage {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.1rem;
+          }
+
+          .confidence-progress {
+            width: 100%;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+          }
+
+          .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+          }
+
+          .severity-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            width: fit-content;
+          }
+
+          .analysis-id {
+            font-family: 'Courier New', monospace;
+            background: #f9fafb;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+          }
+
+          .recommendations, .treatment {
+            border-top: 1px solid #f3f4f6;
+            padding-top: 1rem;
+          }
+
+          .recommendations .detail-value,
+          .treatment .detail-value {
+            color: #374151;
+            line-height: 1.6;
+          }
+
+          .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #f3f4f6;
+            background: #f9fafb;
+          }
+
+          .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+          }
+
+          .modal-btn.secondary {
+            background: #f3f4f6;
+            color: #374151;
+          }
+
+          .modal-btn.secondary:hover {
+            background: #e5e7eb;
+          }
+
+          .modal-btn.danger {
+            background: #ef4444;
+            color: white;
+          }
+
+          .modal-btn.danger:hover {
+            background: #dc2626;
+          }
+
           @media (max-width: 768px) {
             .header-content {
               padding: 1.5rem 1rem;
@@ -633,6 +950,30 @@ export default function Dashboard() {
             .scans-grid {
               grid-template-columns: 1fr;
               gap: 1rem;
+            }
+
+            .modal-content {
+              margin: 1rem;
+              max-height: 95vh;
+            }
+
+            .modal-body {
+              grid-template-columns: 1fr;
+              gap: 1.5rem;
+              padding: 1.5rem;
+            }
+
+            .modal-header {
+              padding: 1rem 1.5rem;
+            }
+
+            .modal-footer {
+              padding: 1rem 1.5rem;
+              flex-direction: column;
+            }
+
+            .modal-btn {
+              width: 100%;
             }
           }
         `}</style>
