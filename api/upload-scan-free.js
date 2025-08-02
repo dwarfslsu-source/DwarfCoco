@@ -1,6 +1,14 @@
-// api/upload-scan-free.js - Simple upload without images using Supabase
-// Updated: 2025-08-02 - Fresh deployment trigger v2
+// api/upload-scan-free.js - Upload with image support using Supabase and Cloudinary
+// Updated: 2025-08-02 - Added base64 image upload support
 import { addScan } from '../lib/supabase-storage.js';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: 'dpezf22nd',
+  api_key: '982718918645139',
+  api_secret: 'WgxBPp-yrLV_H3_2lNZ2pFQrOHk'
+});
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -17,8 +25,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('📱 Simple mobile upload received');
-    console.log('📋 Request body:', JSON.stringify(req.body, null, 2));
+    console.log('📱 Mobile upload received (with image support)');
+    console.log('📋 Request body keys:', Object.keys(req.body));
     
     const scanData = req.body;
     
@@ -33,17 +41,46 @@ export default async function handler(req, res) {
     };
     
     // Extract data from various possible field names
-    const diseaseDetected = scanData.diseaseDetected || scanData.disease_detected || scanData.detectionResult?.primaryDisease || 'Unknown';
-    const confidence = parseFloat(scanData.confidence || scanData.detectionResult?.confidence || 0.0);
+    const diseaseDetected = scanData.diseaseDetected || 
+                           scanData.disease_detected || 
+                           scanData.detectionResult?.primaryDisease || 
+                           'Unknown';
+    const confidence = parseFloat(scanData.confidence || 
+                                scanData.detectionResult?.confidence || 
+                                0.0);
     const friendlyDiseaseName = diseaseNameMap[diseaseDetected] || diseaseDetected;
+    
+    // Handle image upload if base64 image is provided
+    let imageUrl = 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-default.jpg';
+    
+    if (scanData.imageBase64 && scanData.imageBase64.length > 0) {
+      console.log('🖼️ Base64 image found, uploading to Cloudinary...');
+      try {
+        const uploadResult = await cloudinary.uploader.upload(
+          `data:image/jpeg;base64,${scanData.imageBase64}`,
+          {
+            folder: 'coconut-scans',
+            public_id: `mobile-scan-${Date.now()}`,
+            resource_type: 'image'
+          }
+        );
+        imageUrl = uploadResult.secure_url;
+        console.log('✅ Image uploaded successfully:', imageUrl);
+      } catch (uploadError) {
+        console.error('❌ Image upload failed:', uploadError);
+        // Continue with default image
+      }
+    } else {
+      console.log('📄 No image provided, using default');
+    }
     
     const currentTime = new Date().toISOString();
     const uploadData = {
       disease_detected: friendlyDiseaseName,
       confidence: Math.round(confidence * 100),
       severity_level: confidence > 0.8 ? 'high' : confidence > 0.5 ? 'medium' : 'low',
-      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-default.jpg',
-      status: 'MOBILE UPLOAD (NO IMAGE)',
+      image_url: imageUrl,
+      status: imageUrl.includes('mobile-default') ? 'MOBILE UPLOAD (NO IMAGE)' : 'MOBILE UPLOAD WITH IMAGE',
       upload_time: currentTime,
       analysis_complete: true,
       mobile_disease_code: diseaseDetected,
@@ -61,9 +98,11 @@ export default async function handler(req, res) {
       data: newScan,
       scan_id: newScan.id,
       timestamp: newScan.timestamp,
+      image_url: imageUrl,
       ai_result: friendlyDiseaseName,
       confidence: `${Math.round(confidence * 100)}%`,
-      mobile_detection: diseaseDetected
+      mobile_detection: diseaseDetected,
+      has_image: !imageUrl.includes('mobile-default')
     });
 
   } catch (error) {
