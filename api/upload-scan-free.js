@@ -128,13 +128,14 @@ module.exports = async function handler(req, res) {
 
     let imageUrl = null;
 
-    // Upload image to Cloudinary if provided
-    if (scanData.image_base64) {
+    // Upload image to Cloudinary if provided (handle both field names)
+    const imageBase64 = scanData.image_base64 || scanData.imageBase64;
+    if (imageBase64) {
       console.log('📸 Uploading image to Cloudinary...');
       
       try {
         const uploadResult = await cloudinary.uploader.upload(
-          `data:image/jpeg;base64,${scanData.image_base64}`,
+          `data:image/jpeg;base64,${imageBase64}`,
           {
             folder: 'coconut-scans',
             public_id: `scan_${Date.now()}`,
