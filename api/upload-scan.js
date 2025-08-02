@@ -8,7 +8,7 @@ import formidable from 'formidable';
 cloudinary.config({
   cloud_name: 'dpezf22nd',
   api_key: '779179365417543',
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'your-secret-here',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'gGPJ6JpTN4wkGdFrDhKJHQXhBqc', // fallback secret
 });
 
 export const config = {
