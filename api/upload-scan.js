@@ -1,6 +1,6 @@
-// 🆓 REAL CLOUDINARY UPLOAD WITH STORAGE
+// 🆓 REAL CLOUDINARY UPLOAD WITH SUPABASE DATABASE
 import { v2 as cloudinary } from 'cloudinary';
-import { addScan } from '../lib/storage.js';
+import { addScan } from '../lib/supabase-storage.js';
 
 // Configure Cloudinary with your credentials
 cloudinary.config({

@@ -1,5 +1,5 @@
-// api/scans.js - Return stored scan data for dashboard
-import { getScans } from '../lib/storage.js';
+// api/scans.js - Return uploaded scan data from Supabase database
+import { getScans } from '../lib/supabase-storage.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -16,10 +16,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Get real scan data from storage
+    // Get scans from Supabase database
     const scans = await getScans();
     
-    console.log('Returning scan data for dashboard, count:', scans.length);
+    console.log('✅ Retrieved', scans.length, 'scans from database');
     
     return res.status(200).json({
       success: true,
@@ -28,23 +28,24 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Scans API error:', error);
-    // Return sample data if storage fails
+    console.error('❌ Scans API error:', error);
+    // Return sample data if database fails
     const fallbackScans = [
       {
         id: 1,
         timestamp: new Date().toISOString(),
-        disease_detected: 'Healthy',
-        confidence: 95,
-        severity_level: '🟢 Low Risk',
+        disease_detected: 'Database Connection Issue',
+        confidence: 0,
+        severity_level: '⚠️ Fallback Data',
         image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/healthy-sample.jpg'
       }
     ];
     
-    return res.status(200).json({
-      success: true,
+    return res.status(500).json({
+      success: false,
       scans: fallbackScans,
-      total: fallbackScans.length
+      total: fallbackScans.length,
+      message: 'Database error: ' + error.message
     });
   }
 }
