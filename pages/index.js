@@ -199,8 +199,20 @@ export default function Dashboard() {
         {/* Header */}
         <header className="header">
           <div className="header-content">
-            <h1>🌴 Dwarf Coconut Disease Detector</h1>
-            <p>AI-Powered Disease Detection Dashboard</p>
+            <div className="header-main">
+              <h1>🌴 Dwarf Coconut Disease Detector</h1>
+              <p>AI-Powered Disease Detection Dashboard</p>
+            </div>
+            <div className="header-actions">
+              <a 
+                href="https://www.mediafire.com/file/5r1qdx7c7az7t2k/DwarfCoconut-RequestDebug.apk/file"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="download-btn"
+              >
+                📱 Download Android App
+              </a>
+            </div>
           </div>
         </header>
 
@@ -305,7 +317,59 @@ export default function Dashboard() {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+          }
+
+          .header-main {
             text-align: center;
+            flex: 1;
+          }
+
+          .header-actions {
+            display: flex;
+            align-items: center;
+          }
+
+          .download-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+          }
+
+          @media (max-width: 768px) {
+            .header-content {
+              flex-direction: column;
+              text-align: center;
+            }
+            
+            .header-main {
+              order: 1;
+            }
+            
+            .header-actions {
+              order: 2;
+              width: 100%;
+              justify-content: center;
+            }
           }
 
           .header h1 {
