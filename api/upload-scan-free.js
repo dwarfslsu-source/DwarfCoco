@@ -27,6 +27,7 @@ export default async function handler(req, res) {
   try {
     console.log('📱 Mobile upload received (with image support)');
     console.log('📋 Request body keys:', Object.keys(req.body));
+    console.log('📋 Full request body:', JSON.stringify(req.body, null, 2));
     console.log('📋 Has imageBase64?', !!req.body.imageBase64);
     console.log('📋 ImageBase64 length:', req.body.imageBase64 ? req.body.imageBase64.length : 0);
     
