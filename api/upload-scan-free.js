@@ -1,5 +1,5 @@
 // api/upload-scan-free.js - Upload with image support using Supabase and Cloudinary
-// Updated: 2025-08-02 - Added base64 image upload support
+// Updated: 2025-08-02 - Added base64 image upload support v3
 import { addScan } from '../lib/supabase-storage.js';
 import { v2 as cloudinary } from 'cloudinary';
 
