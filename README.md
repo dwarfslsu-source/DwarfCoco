@@ -1,10 +1,10 @@
-# 🥥 Coconut Disease Cloud Dashboard
+# 🌴 Dwarf Coconut Disease Detector
 
-A comprehensive web dashboard for monitoring coconut tree health using AI-powered disease detection. View all scanned images, analyze disease patterns, and track tree health over time.
+A comprehensive web dashboard for monitoring dwarf coconut tree health using AI-powered disease detection. View all scanned images, analyze disease patterns, and track tree health over time.
 
 ## 🌟 Features
 
-- **📊 Real-time Dashboard**: View all scanned coconut trees with disease detection results
+- **📊 Real-time Dashboard**: View all scanned dwarf coconut trees with disease detection results
 - **📈 Analytics**: Comprehensive charts and statistics on disease distribution  
 - **🔬 AI-Powered**: Advanced machine learning for accurate disease classification
 - **☁️ Cloud Storage**: Secure storage of scan images and results

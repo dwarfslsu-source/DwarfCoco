@@ -109,8 +109,8 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Coconut Health Monitor</title>
-        <meta name="description" content="AI-powered coconut disease detection dashboard" />
+        <title>Dwarf Coconut Disease Detector</title>
+        <meta name="description" content="AI-powered dwarf coconut disease detection dashboard" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥥</text></svg>" />
       </Head>
 
@@ -118,8 +118,8 @@ export default function Dashboard() {
         {/* Header */}
         <header className="header">
           <div className="header-content">
-            <h1>🥥 Coconut Health</h1>
-            <p>AI Disease Detection Dashboard</p>
+            <h1>🌴 Dwarf Coconut Disease Detector</h1>
+            <p>AI-Powered Disease Detection Dashboard</p>
           </div>
         </header>
 

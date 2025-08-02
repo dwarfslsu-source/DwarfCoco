@@ -1,7 +1,7 @@
 {
-  "name": "coconut-cloud-dashboard",
+  "name": "dwarf-coconut-disease-detector",
   "version": "1.0.0",
-  "description": "FREE Cloud Dashboard for Coconut Disease Detection",
+  "description": "FREE Cloud Dashboard for Dwarf Coconut Disease Detection",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
