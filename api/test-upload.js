@@ -5,39 +5,81 @@ import { analyzeImage } from '../lib/disease-detection.js';
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, GET');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
+  // Allow both GET and POST for debugging
+  if (req.method !== 'POST' && req.method !== 'GET') {
+    console.log(`❌ Method not allowed: ${req.method}`);
+    return res.status(405).json({ success: false, message: `Method ${req.method} not allowed` });
+  }
+
+  // Handle GET request for testing
+  if (req.method === 'GET') {
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Test upload endpoint is working!',
+      method: 'GET',
+      timestamp: new Date().toISOString()
+    });
   }
 
   try {
-    console.log('🧪 Test upload request received');
-    console.log('📋 Request body keys:', Object.keys(req.body || {}));
+    console.log('📱 Mobile upload request received');
+    console.log('📋 Request method:', req.method);
+    console.log('📋 Request headers:', JSON.stringify(req.headers, null, 2));
+    console.log('📋 Request body:', JSON.stringify(req.body, null, 2));
     
-    // Simple test without image upload - just create a scan with AI detection
+    // Use the ACTUAL data from the mobile app
     const currentTime = new Date().toISOString();
     
-    // Use a sample image URL for testing
-    const testImageUrl = 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/test-coconut.jpg';
+    // Get the real data from the mobile app request
+    const mobileData = req.body;
     
-    console.log('🔬 Running AI disease analysis...');
-    const aiResults = await analyzeImage(testImageUrl);
-    console.log('🧠 AI Results:', aiResults);
+    // Map the mobile disease names to user-friendly names
+    const diseaseNameMap = {
+      'CCI_Caterpillars': 'Caterpillar Infestation',
+      'CCI_Leaflets': 'Coconut Leaflet Disease', 
+      'Healthy_Leaves': 'Healthy Coconut',
+      'WCLWD_DryingofLeaflets': 'Leaf Drying Disease',
+      'WCLWD_Flaccidity': 'Leaf Flaccidity',
+      'WCLWD_Yellowing': 'Leaf Yellowing Disease'
+    };
+    
+    // Extract disease detection from various possible structures
+    let diseaseDetected = 'Unknown';
+    let confidence = 0.0;
+    
+    // Try different possible data structures
+    if (mobileData.detectionResult?.primaryDisease) {
+      diseaseDetected = mobileData.detectionResult.primaryDisease;
+      confidence = mobileData.detectionResult.confidence || 0.0;
+    } else if (mobileData.diseaseDetected) {
+      diseaseDetected = mobileData.diseaseDetected;
+      confidence = mobileData.confidence || 0.0;
+    } else if (mobileData.disease_detected) {
+      diseaseDetected = mobileData.disease_detected;
+      confidence = mobileData.confidence || 0.0;
+    }
+    
+    const friendlyDiseaseName = diseaseNameMap[diseaseDetected] || diseaseDetected;
+    
+    console.log(`🔬 Mobile detected: ${diseaseDetected} (${friendlyDiseaseName}) with ${Math.round(confidence * 100)}% confidence`);
     
     const scanData = {
-      disease_detected: aiResults.disease_detected,
-      confidence: aiResults.confidence,
-      severity_level: aiResults.severity_level,
-      image_url: testImageUrl,
-      status: 'test_upload_from_mobile',
+      disease_detected: friendlyDiseaseName,
+      confidence: Math.round(confidence * 100),
+      severity_level: confidence > 0.8 ? 'high' : confidence > 0.5 ? 'medium' : 'low',
+      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-upload.jpg',
+      status: 'REAL MOBILE UPLOAD',
       upload_time: currentTime,
-      analysis_complete: aiResults.analysis_complete
+      analysis_complete: true,
+      mobile_disease_code: diseaseDetected,
+      raw_mobile_data: mobileData
     };
 
     // Add to Supabase database
@@ -47,12 +89,14 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Test upload successful with AI detection!',
+      message: `Mobile scan successful: ${friendlyDiseaseName} detected!`,
       data: newScan,
       scan_id: newScan.id,
       timestamp: newScan.timestamp,
       image_url: newScan.image_url,
-      ai_result: aiResults.disease_detected
+      ai_result: friendlyDiseaseName,
+      confidence: `${Math.round(confidence * 100)}%`,
+      mobile_detection: diseaseDetected
     });
 
   } catch (error) {
