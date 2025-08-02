@@ -40,6 +40,18 @@ function writeScans(scans) {
   }
 }
 
+function getRecommendation(disease) {
+  const recommendations = {
+    'CCI_Caterpillars': 'Remove affected leaves and apply organic pesticide',
+    'CCI_Leaflets': 'Improve drainage and apply fungicide treatment', 
+    'Healthy_Leaves': 'Continue current care routine',
+    'WCLWD_DryingofLeaflets': 'Increase watering and check for pests',
+    'WCLWD_Flaccidity': 'Check soil moisture and nutrient levels',
+    'WCLWD_Yellowing': 'Apply nitrogen-rich fertilizer and improve soil drainage'
+  };
+  return recommendations[disease] || 'Consult agricultural expert for proper treatment';
+}
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -161,18 +173,6 @@ export default async function handler(req, res) {
       mobile_disease_code: diseaseDetected,
       raw_mobile_data: mobileData
     };
-
-function getRecommendation(disease) {
-  const recommendations = {
-    'CCI_Caterpillars': 'Remove affected leaves and apply organic pesticide',
-    'CCI_Leaflets': 'Improve drainage and apply fungicide treatment', 
-    'Healthy_Leaves': 'Continue current care routine',
-    'WCLWD_DryingofLeaflets': 'Increase watering and check for pests',
-    'WCLWD_Flaccidity': 'Check soil moisture and nutrient levels',
-    'WCLWD_Yellowing': 'Apply nitrogen-rich fertilizer and improve soil drainage'
-  };
-  return recommendations[disease] || 'Consult agricultural expert for proper treatment';
-}
     
     // Add to scans array
     scans.push(newScan);
