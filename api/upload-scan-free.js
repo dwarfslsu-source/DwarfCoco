@@ -3,6 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 
+// Use the same storage as scans.js for consistency
+// Import will be handled dynamically
+
 // Configure Cloudinary (FREE: 25GB storage, 25GB bandwidth)
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -152,11 +155,10 @@ module.exports = async function handler(req, res) {
     }
 
     // Read existing scans
-    const scans = readScans();
+    // const scans = readScans();
     
-    // Create new scan record
+    // Create new scan record for Supabase
     const newScan = {
-      id: scans.length + 1,
       device_id: deviceId,
       timestamp: new Date().toISOString(),
       disease_detected: friendlyDiseaseName,
@@ -171,30 +173,56 @@ module.exports = async function handler(req, res) {
       processing_time_ms: parseInt(scanData.processing_time_ms) || 0,
       all_predictions: scanData.all_predictions || '',
       mobile_disease_code: diseaseDetected,
-      raw_mobile_data: mobileData
+      raw_mobile_data: JSON.stringify(mobileData)
     };
     
-    // Add to scans array
-    scans.push(newScan);
-    
-    // Write back to file
-    const success = writeScans(scans);
-    
-    if (success) {
-      console.log(`✅ New scan saved: ${friendlyDiseaseName} (${diseaseDetected}) (ID: ${newScan.id})`);
+    // Save to the same storage system as scans.js
+    try {
+      // Dynamic import for ES modules
+      const { addScan } = await import('../lib/supabase-storage.js');
+      const savedScan = await addScan(newScan);
       
-      res.status(201).json({ 
-        success: true, 
-        message: `Mobile scan successful: ${friendlyDiseaseName} detected!`,
-        scan_id: newScan.id,
-        image_url: imageUrl || newScan.image_url,
-        ai_result: friendlyDiseaseName,
-        confidence: `${Math.round(confidence * 100)}%`,
-        mobile_detection: diseaseDetected,
-        data: newScan
-      });
-    } else {
-      res.status(500).json({ error: 'Failed to save scan' });
+      if (savedScan) {
+        console.log(`✅ New scan saved to Supabase: ${friendlyDiseaseName} (${diseaseDetected}) (ID: ${savedScan.id})`);
+        
+        res.status(201).json({ 
+          success: true, 
+          message: `Mobile scan successful: ${friendlyDiseaseName} detected!`,
+          scan_id: savedScan.id,
+          image_url: imageUrl || newScan.image_url,
+          ai_result: friendlyDiseaseName,
+          confidence: `${Math.round(confidence * 100)}%`,
+          mobile_detection: diseaseDetected,
+          data: savedScan
+        });
+      } else {
+        res.status(500).json({ error: 'Failed to save scan to database' });
+      }
+    } catch (dbError) {
+      console.error('❌ Database error, falling back to local storage:', dbError);
+      
+      // Fallback to local file storage if database fails
+      const scans = readScans();
+      newScan.id = scans.length + 1;
+      scans.push(newScan);
+      const success = writeScans(scans);
+      
+      if (success) {
+        console.log(`✅ New scan saved locally: ${friendlyDiseaseName} (${diseaseDetected}) (ID: ${newScan.id})`);
+        
+        res.status(201).json({ 
+          success: true, 
+          message: `Mobile scan successful: ${friendlyDiseaseName} detected!`,
+          scan_id: newScan.id,
+          image_url: imageUrl || newScan.image_url,
+          ai_result: friendlyDiseaseName,
+          confidence: `${Math.round(confidence * 100)}%`,
+          mobile_detection: diseaseDetected,
+          data: newScan
+        });
+      } else {
+        res.status(500).json({ error: 'Failed to save scan' });
+      }
     }
     
   } catch (error) {
