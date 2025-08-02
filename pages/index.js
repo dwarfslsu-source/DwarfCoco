@@ -20,18 +20,31 @@ export default function Dashboard() {
       const response = await fetch('/api/scans');
       const data = await response.json();
       
-      // Handle the API response structure
-      const scanArray = data.scans || data || [];
+      // Ensure we always have an array
+      let scanArray = [];
+      if (data && data.scans && Array.isArray(data.scans)) {
+        scanArray = data.scans;
+      } else if (Array.isArray(data)) {
+        scanArray = data;
+      }
+      
       setScans(scanArray);
       calculateStats(scanArray);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching scans:', error);
+      setScans([]); // Set empty array on error
       setLoading(false);
     }
   };
 
   const calculateStats = (scanData) => {
+    // Ensure scanData is an array
+    if (!Array.isArray(scanData)) {
+      setStats({ total: 0, healthy: 0, diseased: 0, critical: 0 });
+      return;
+    }
+    
     const total = scanData.length;
     const healthy = scanData.filter(s => 
       (s.disease_detected || '').toLowerCase().includes('healthy')
@@ -207,8 +220,8 @@ export default function Dashboard() {
             display: 'grid', 
             gap: '20px'
           }}>
-            {scans.map((scan, index) => (
-              <div key={scan.id} style={{ 
+            {Array.isArray(scans) && scans.map((scan, index) => (
+              <div key={scan.id || index} style={{ 
                 border: '1px solid #e0e0e0',
                 borderRadius: '12px',
                 padding: '25px',
@@ -309,29 +322,8 @@ export default function Dashboard() {
                     <div style={{ fontSize: '0.85em', color: '#999' }}>
                       Scan #{scan.id}
                     </div>
-                    <div style={{ fontSize: '0.85em', color: '#999', marginTop: '4px' }}>
-                      Device: {scan.device_id.substring(0, 8)}...
-                    </div>
                   </div>
                 </div>
-
-                {/* Recommendation */}
-                {scan.recommendation && (
-                  <div style={{ 
-                    marginTop: '20px',
-                    padding: '18px',
-                    backgroundColor: '#e8f5e8',
-                    borderRadius: '10px',
-                    borderLeft: '4px solid #4CAF50'
-                  }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#2E7D32' }}>
-                      💡 AI Recommendation:
-                    </div>
-                    <div style={{ color: '#333', lineHeight: '1.5' }}>
-                      {scan.recommendation}
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
           </div>

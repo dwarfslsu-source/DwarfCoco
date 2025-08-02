@@ -87,9 +87,9 @@ vercel env add CLOUDINARY_CLOUD_NAME
 
 The Android app automatically uploads scan results to this dashboard. Make sure to:
 
-1. Update the API endpoint in `CloudApiService.kt`:
+1. Update the API endpoint in `ApiClient.kt`:
 ```kotlin
-private const val BASE_URL = "https://your-dashboard.vercel.app/"
+private const val BASE_URL = "https://coconut-disease-detector-mbj22h9py-jaypees-projects-e88e7d83.vercel.app/"
 ```
 
 2. Build and install the Android app

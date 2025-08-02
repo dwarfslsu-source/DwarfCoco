@@ -1,5 +1,6 @@
 // 🆓 REAL CLOUDINARY UPLOAD WITH STORAGE
 import { v2 as cloudinary } from 'cloudinary';
+import { addScan } from '../lib/storage.js';
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -7,9 +8,6 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-// Simple data storage (works on Vercel)
-const SCANS_DATA = [];
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -30,29 +28,18 @@ export default async function handler(req, res) {
     
     // For now, create sample data (will add real image processing later)
     // First let's make sure the basic upload works
-    const newScan = {
-      id: SCANS_DATA.length + 1,
-      timestamp: new Date().toISOString(),
-      disease_detected: 'Bud Rot', // Will be real AI result later
-      confidence: 85,
-      severity_level: '🔴 Critical Risk',
-      recommendation: 'Apply fungicide immediately and improve drainage',
-      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/sample-coconut.jpg', // Using your Cloudinary
-      device_model: 'Android Device',
-      location: 'Farm Location',
+    const scanData = {
+      disease_detected: 'Uploaded Scan', // Will be real AI result later
+      confidence: 88,
+      severity_level: '� Medium Risk',
+      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/uploaded-coconut.jpg', // Using your Cloudinary
       status: 'uploaded'
     };
 
-    // Add to our simple storage
-    SCANS_DATA.unshift(newScan); // Add to beginning
+    // Add to shared storage
+    const newScan = await addScan(scanData);
     
-    // Keep only latest 50 scans
-    if (SCANS_DATA.length > 50) {
-      SCANS_DATA.splice(50);
-    }
-
     console.log('New scan stored with Cloudinary setup:', newScan);
-    console.log('Total scans:', SCANS_DATA.length);
 
     return res.status(200).json({
       success: true,
