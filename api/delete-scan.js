@@ -1,4 +1,4 @@
-import { supabase } from '../../lib/supabase-storage';
+import { deleteScan } from '../lib/supabase-storage.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -29,41 +29,10 @@ export default async function handler(req, res) {
 
     console.log(`🗑️ Attempting to delete scan with ID: ${id}`);
 
-    // First, get the scan details to check if it has an image to delete
-    const { data: scan, error: fetchError } = await supabase
-      .from('coconut_scans')
-      .select('image_url')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) {
-      console.error('Error fetching scan:', fetchError);
-      return res.status(404).json({
-        error: 'Scan not found',
-        message: 'Could not find scan with the provided ID'
-      });
-    }
-
     // Delete the scan from database
-    const { error: deleteError } = await supabase
-      .from('coconut_scans')
-      .delete()
-      .eq('id', id);
-
-    if (deleteError) {
-      console.error('Error deleting scan:', deleteError);
-      return res.status(500).json({
-        error: 'Delete failed',
-        message: 'Failed to delete scan from database',
-        details: deleteError.message
-      });
-    }
+    await deleteScan(id);
 
     console.log(`✅ Successfully deleted scan with ID: ${id}`);
-
-    // Note: We're not deleting from Cloudinary here to avoid API complexity
-    // Images will remain in Cloudinary but won't be accessible from the app
-    // This saves on storage management complexity while still cleaning up the database
 
     return res.status(200).json({
       success: true,

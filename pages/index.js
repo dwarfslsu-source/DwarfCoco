@@ -81,7 +81,13 @@ export default function Dashboard() {
         method: 'DELETE',
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        result = { message: 'Invalid response from server' };
+      }
 
       if (response.ok) {
         // Remove the deleted scan from state
@@ -93,11 +99,12 @@ export default function Dashboard() {
         
         alert('✅ Scan deleted successfully!');
       } else {
-        throw new Error(result.message || 'Failed to delete scan');
+        console.error('Delete failed with status:', response.status, result);
+        throw new Error(result.message || `Delete failed (${response.status})`);
       }
     } catch (error) {
       console.error('Error deleting scan:', error);
-      alert('❌ Failed to delete scan. Please try again.');
+      alert(`❌ Failed to delete scan: ${error.message}`);
     }
   };
 
