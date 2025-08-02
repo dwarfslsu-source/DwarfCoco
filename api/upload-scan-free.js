@@ -130,7 +130,7 @@ module.exports = async function handler(req, res) {
 
     // Upload image to Cloudinary if provided (handle both field names)
     const imageBase64 = scanData.image_base64 || scanData.imageBase64;
-    if (imageBase64) {
+    if (imageBase64 && imageBase64.length > 0) {
       console.log('📸 Uploading image to Cloudinary...');
       
       try {
@@ -153,6 +153,8 @@ module.exports = async function handler(req, res) {
         console.error('❌ Image upload failed:', uploadError);
         // Continue without image if upload fails
       }
+    } else {
+      console.log('📝 No image data provided, uploading results only');
     }
 
     // Read existing scans
