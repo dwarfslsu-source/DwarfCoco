@@ -20,7 +20,6 @@ export default function Dashboard() {
       const response = await fetch('/api/scans');
       const data = await response.json();
       
-      // Ensure we always have an array
       let scanArray = [];
       if (data && data.scans && Array.isArray(data.scans)) {
         scanArray = data.scans;
@@ -33,13 +32,12 @@ export default function Dashboard() {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching scans:', error);
-      setScans([]); // Set empty array on error
+      setScans([]);
       setLoading(false);
     }
   };
 
   const calculateStats = (scanData) => {
-    // Ensure scanData is an array
     if (!Array.isArray(scanData)) {
       setStats({ total: 0, healthy: 0, diseased: 0, critical: 0 });
       return;
@@ -50,304 +48,362 @@ export default function Dashboard() {
       (s.disease_detected || '').toLowerCase().includes('healthy')
     ).length;
     const critical = scanData.filter(s => 
-      (s.severity_level || '').includes('Critical') || (s.severity_level || '').includes('🔴')
+      (s.severity_level || '').toLowerCase().includes('high') ||
+      (s.severity_level || '').toLowerCase().includes('critical')
     ).length;
     const diseased = total - healthy;
 
     setStats({ total, healthy, diseased, critical });
   };
 
-  const getSeverityColor = (severity) => {
-    if (!severity) return '#757575';
-    if (severity.includes('🟢')) return '#4CAF50';
-    if (severity.includes('🟡')) return '#FF9800';
-    if (severity.includes('🟠')) return '#FF5722';
-    if (severity.includes('🔴')) return '#F44336';
-    return '#757575';
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
   };
 
-  const getDiseaseEmoji = (disease) => {
-    if (!disease) return '🥥';
-    
-    const diseaseMap = {
-      'healthy': '✅',
-      'leaf_spot': '🟤',
-      'bud_rot': '🔴',
-      'lethal_yellowing': '🟡',
-      'cci_caterpillars': '🐛',
-      'wclwd': '🟠'
-    };
-    
-    const diseaseKey = disease.toLowerCase().replace(/[^a-z]/g, '_');
-    return diseaseMap[diseaseKey] || '🥥';
+  const getSeverityColor = (severity) => {
+    if (!severity) return '#6B7280';
+    const level = severity.toLowerCase();
+    if (level.includes('low') || level.includes('healthy')) return '#10B981';
+    if (level.includes('medium')) return '#F59E0B';
+    if (level.includes('high')) return '#EF4444';
+    if (level.includes('critical')) return '#DC2626';
+    return '#6B7280';
   };
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#f5f5f5'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3em', marginBottom: '20px' }}>🌴</div>
-          <div style={{ fontSize: '1.2em' }}>Loading Coconut Disease Dashboard...</div>
-        </div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading dashboard...</p>
+        
+        <style jsx>{`
+          .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+          }
+          .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <>
       <Head>
-        <title>🥥 Coconut Disease Dashboard</title>
-        <meta name="description" content="Monitor coconut tree health with AI-powered disease detection" />
+        <title>Coconut Health Monitor</title>
+        <meta name="description" content="AI-powered coconut disease detection dashboard" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥥</text></svg>" />
       </Head>
 
-      {/* Header */}
-      <div style={{ 
-        backgroundColor: '#2E7D32', 
-        color: 'white', 
-        padding: '30px', 
-        borderRadius: '15px',
-        marginBottom: '30px',
-        textAlign: 'center',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-      }}>
-        <h1 style={{ margin: 0, fontSize: '2.5em', fontWeight: 'bold' }}>🥥 Coconut Disease Dashboard</h1>
-        <p style={{ margin: '10px 0 0 0', fontSize: '1.2em', opacity: 0.9 }}>AI-Powered Coconut Tree Health Monitoring System</p>
-        <p style={{ margin: '5px 0 0 0', fontSize: '0.9em', opacity: 0.7 }}>100% Free • No Database Required • Real-time Updates</p>
-      </div>
-
-      {/* Statistics Cards */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '20px',
-        marginBottom: '30px'
-      }}>
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '25px', 
-          borderRadius: '15px',
-          textAlign: 'center',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          border: '2px solid #e0e0e0'
-        }}>
-          <div style={{ fontSize: '2.5em', marginBottom: '10px' }}>📊</div>
-          <div style={{ fontSize: '2.5em', fontWeight: 'bold', color: '#2E7D32', marginBottom: '5px' }}>{stats.total}</div>
-          <div style={{ color: '#666', fontSize: '1.1em' }}>Total Scans</div>
-        </div>
-        
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '25px', 
-          borderRadius: '15px',
-          textAlign: 'center',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          border: '2px solid #4CAF50'
-        }}>
-          <div style={{ fontSize: '2.5em', marginBottom: '10px' }}>✅</div>
-          <div style={{ fontSize: '2.5em', fontWeight: 'bold', color: '#4CAF50', marginBottom: '5px' }}>{stats.healthy}</div>
-          <div style={{ color: '#666', fontSize: '1.1em' }}>Healthy Trees</div>
-        </div>
-        
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '25px', 
-          borderRadius: '15px',
-          textAlign: 'center',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          border: '2px solid #FF9800'
-        }}>
-          <div style={{ fontSize: '2.5em', marginBottom: '10px' }}>🦠</div>
-          <div style={{ fontSize: '2.5em', fontWeight: 'bold', color: '#FF9800', marginBottom: '5px' }}>{stats.diseased}</div>
-          <div style={{ color: '#666', fontSize: '1.1em' }}>Diseased Trees</div>
-        </div>
-        
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '25px', 
-          borderRadius: '15px',
-          textAlign: 'center',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          border: '2px solid #F44336'
-        }}>
-          <div style={{ fontSize: '2.5em', marginBottom: '10px' }}>🚨</div>
-          <div style={{ fontSize: '2.5em', fontWeight: 'bold', color: '#F44336', marginBottom: '5px' }}>{stats.critical}</div>
-          <div style={{ color: '#666', fontSize: '1.1em' }}>Critical Cases</div>
-        </div>
-      </div>
-
-      {/* Scans List */}
-      <div style={{ 
-        backgroundColor: 'white', 
-        borderRadius: '15px',
-        padding: '30px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{ marginTop: 0, color: '#2E7D32', fontSize: '1.8em', marginBottom: '20px' }}>🔬 Recent Disease Scans</h2>
-        
-        {scans.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '80px 20px', 
-            color: '#666',
-            backgroundColor: '#f9f9f9',
-            borderRadius: '10px',
-            border: '2px dashed #ddd'
-          }}>
-            <div style={{ fontSize: '4em', marginBottom: '20px' }}>📱</div>
-            <div style={{ fontSize: '1.3em', fontWeight: 'bold', marginBottom: '10px' }}>No scans yet!</div>
-            <div style={{ fontSize: '1em', marginBottom: '20px' }}>Use the mobile app to start detecting coconut diseases.</div>
-            <div style={{ 
-              backgroundColor: '#2E7D32', 
-              color: 'white', 
-              padding: '12px 24px', 
-              borderRadius: '8px', 
-              display: 'inline-block',
-              fontSize: '0.9em'
-            }}>
-              📲 Download the Android app to begin scanning
-            </div>
+      <div className="dashboard">
+        {/* Header */}
+        <header className="header">
+          <div className="header-content">
+            <h1>🥥 Coconut Health</h1>
+            <p>AI Disease Detection Dashboard</p>
           </div>
-        ) : (
-          <div style={{ 
-            display: 'grid', 
-            gap: '20px'
-          }}>
-            {Array.isArray(scans) && scans.map((scan, index) => (
-              <div key={scan.id || index} style={{ 
-                border: '1px solid #e0e0e0',
-                borderRadius: '12px',
-                padding: '25px',
-                backgroundColor: '#fafafa',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
-              }}>
-                <div style={{ 
-                  display: 'grid',
-                  gridTemplateColumns: 'auto 1fr auto',
-                  gap: '25px',
-                  alignItems: 'center'
-                }}>
-                  {/* Image */}
-                  <div style={{ width: '120px', height: '120px' }}>
-                    {scan.image_url ? (
-                      <img 
-                        src={scan.image_url} 
-                        alt="Coconut leaf scan"
-                        style={{ 
-                          width: '100%', 
-                          height: '100%', 
-                          objectFit: 'cover',
-                          borderRadius: '10px',
-                          border: '2px solid #e0e0e0'
-                        }}
-                      />
-                    ) : (
-                      <div style={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        backgroundColor: '#e8f5e8',
-                        borderRadius: '10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '3em',
-                        border: '2px solid #4CAF50'
-                      }}>
-                        🥥
-                      </div>
-                    )}
-                  </div>
+        </header>
 
-                  {/* Details */}
-                  <div>
-                    <div style={{ 
-                      fontSize: '1.4em', 
-                      fontWeight: 'bold',
-                      marginBottom: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px'
-                    }}>
-                      <span>{getDiseaseEmoji(scan.disease_detected || 'unknown')}</span>
-                      <span>{(scan.disease_detected || 'Unknown').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
-                    </div>
-                    <div style={{ color: '#666', marginBottom: '8px', fontSize: '0.95em' }}>
-                      📅 {new Date(scan.timestamp || Date.now()).toLocaleString()}
-                    </div>
-                    <div style={{ color: '#666', marginBottom: '8px', fontSize: '0.95em' }}>
-                      🎯 Confidence: <strong>{Math.round(scan.confidence || 0)}%</strong>
-                    </div>
-                    <div style={{ 
-                      color: getSeverityColor(scan.severity_level || '🟢 Low Risk'),
-                      fontWeight: 'bold',
-                      fontSize: '1em'
-                    }}>
-                      {scan.severity_level || '🟢 Low Risk'}
-                    </div>
-                  </div>
+        {/* Stats Grid */}
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-number">{stats.total}</div>
+            <div className="stat-label">Total Scans</div>
+          </div>
+          <div className="stat-card healthy">
+            <div className="stat-number">{stats.healthy}</div>
+            <div className="stat-label">Healthy Trees</div>
+          </div>
+          <div className="stat-card diseased">
+            <div className="stat-number">{stats.diseased}</div>
+            <div className="stat-label">Diseased Trees</div>
+          </div>
+          <div className="stat-card critical">
+            <div className="stat-number">{stats.critical}</div>
+            <div className="stat-label">Critical Cases</div>
+          </div>
+        </div>
 
-                  {/* Actions */}
-                  <div style={{ textAlign: 'right' }}>
-                    <button style={{
-                      backgroundColor: '#2E7D32',
-                      color: 'white',
-                      border: 'none',
-                      padding: '12px 18px',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      marginBottom: '12px',
-                      display: 'block',
-                      width: '140px',
-                      fontSize: '0.9em',
-                      fontWeight: 'bold'
-                    }}>
-                      📋 View Details
-                    </button>
-                    <div style={{ fontSize: '0.85em', color: '#999' }}>
-                      Scan #{scan.id}
+        {/* Recent Scans */}
+        <div className="scans-section">
+          <h2>Recent Disease Scans</h2>
+          {scans.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">📱</div>
+              <h3>No scans yet</h3>
+              <p>Upload photos from your mobile app to see results here</p>
+            </div>
+          ) : (
+            <div className="scans-grid">
+              {scans.slice(0, 12).map((scan, index) => (
+                <div key={scan.id || index} className="scan-card">
+                  <div className="scan-image">
+                    <img 
+                      src={scan.image_url || '/api/placeholder/150/150'} 
+                      alt="Coconut scan"
+                      onError={(e) => {
+                        e.target.src = '/api/placeholder/150/150';
+                      }}
+                    />
+                  </div>
+                  <div className="scan-content">
+                    <div className="scan-disease">
+                      {scan.disease_detected || 'Unknown'}
+                    </div>
+                    <div className="scan-confidence">
+                      {scan.confidence}% confidence
+                    </div>
+                    <div 
+                      className="scan-severity"
+                      style={{ color: getSeverityColor(scan.severity_level) }}
+                    >
+                      {scan.severity_level || 'Unknown severity'}
+                    </div>
+                    <div className="scan-date">
+                      {formatDate(scan.timestamp || scan.created_at)}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      {/* Footer */}
-      <div style={{ 
-        textAlign: 'center', 
-        marginTop: '40px',
-        color: '#666',
-        fontSize: '0.9em',
-        padding: '20px',
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ fontSize: '1.5em', marginBottom: '10px' }}>🌱</div>
-        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>Powered by AI • Helping farmers protect coconut trees worldwide</p>
-        <p style={{ margin: '0 0 8px 0' }}>📱 Download the mobile app to start scanning • 🌐 Access anywhere, anytime</p>
-        <p style={{ margin: 0, fontSize: '0.8em', opacity: 0.7 }}>
-          100% Free Service • No Database Required • Powered by Vercel + Cloudinary
-        </p>
+        <style jsx>{`
+          .dashboard {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #1f2937;
+          }
+
+          .header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+          }
+
+          .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            text-align: center;
+          }
+
+          .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+
+          .header p {
+            margin: 0.5rem 0 0 0;
+            color: #6b7280;
+            font-size: 1.1rem;
+          }
+
+          .stats-grid {
+            max-width: 1200px;
+            margin: 0 auto 3rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+          }
+
+          .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #f3f4f6;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+          }
+
+          .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+          }
+
+          .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #374151;
+            line-height: 1;
+          }
+
+          .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .stat-card.healthy .stat-number { color: #10b981; }
+          .stat-card.diseased .stat-number { color: #f59e0b; }
+          .stat-card.critical .stat-number { color: #ef4444; }
+
+          .scans-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem 1rem;
+          }
+
+          .scans-section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: #374151;
+            text-align: center;
+          }
+
+          .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+          }
+
+          .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+          }
+
+          .empty-state h3 {
+            margin: 0 0 0.5rem 0;
+            color: #374151;
+            font-weight: 600;
+          }
+
+          .empty-state p {
+            color: #6b7280;
+            margin: 0;
+          }
+
+          .scans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+          }
+
+          .scan-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #f3f4f6;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+          }
+
+          .scan-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+          }
+
+          .scan-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            background: #f9fafb;
+          }
+
+          .scan-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+          }
+
+          .scan-card:hover .scan-image img {
+            transform: scale(1.05);
+          }
+
+          .scan-content {
+            padding: 1.5rem;
+          }
+
+          .scan-disease {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+          }
+
+          .scan-confidence {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+          }
+
+          .scan-severity {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .scan-date {
+            font-size: 0.8rem;
+            color: #9ca3af;
+          }
+
+          @media (max-width: 768px) {
+            .header-content {
+              padding: 1.5rem 1rem;
+            }
+            
+            .header h1 {
+              font-size: 2rem;
+            }
+            
+            .stats-grid {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 1rem;
+              margin-bottom: 2rem;
+            }
+            
+            .stat-card {
+              padding: 1.5rem 1rem;
+            }
+            
+            .stat-number {
+              font-size: 2.5rem;
+            }
+            
+            .scans-grid {
+              grid-template-columns: 1fr;
+              gap: 1rem;
+            }
+          }
+        `}</style>
       </div>
-    </div>
+    </>
   );
 }
