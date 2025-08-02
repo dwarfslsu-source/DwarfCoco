@@ -1,6 +1,7 @@
 // 🆓 REAL CLOUDINARY UPLOAD WITH SUPABASE DATABASE
 import { v2 as cloudinary } from 'cloudinary';
 import { addScan } from '../lib/supabase-storage.js';
+import { analyzeImage } from '../lib/disease-detection.js';
 import formidable from 'formidable';
 
 // Configure Cloudinary with your credentials
@@ -73,13 +74,19 @@ export default async function handler(req, res) {
     
     // Create scan data from real mobile upload
     const currentTime = new Date().toISOString();
+    
+    // Run AI disease detection on the uploaded image
+    console.log('🔬 Running AI disease analysis...');
+    const aiResults = await analyzeImage(imageUrl);
+    
     const scanData = {
-      disease_detected: '📱 REAL MOBILE UPLOAD',
-      confidence: 92,
-      severity_level: '🔥 Live Upload from Mobile',
+      disease_detected: aiResults.disease_detected,
+      confidence: aiResults.confidence,
+      severity_level: aiResults.severity_level,
       image_url: imageUrl,
       status: 'uploaded_from_mobile',
-      upload_time: currentTime
+      upload_time: currentTime,
+      analysis_complete: aiResults.analysis_complete
     };
 
     // Add to shared storage
