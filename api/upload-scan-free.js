@@ -27,6 +27,8 @@ export default async function handler(req, res) {
   try {
     console.log('📱 Mobile upload received (with image support)');
     console.log('📋 Request body keys:', Object.keys(req.body));
+    console.log('📋 Has imageBase64?', !!req.body.imageBase64);
+    console.log('📋 ImageBase64 length:', req.body.imageBase64 ? req.body.imageBase64.length : 0);
     
     const scanData = req.body;
     
@@ -53,11 +55,19 @@ export default async function handler(req, res) {
     // Handle image upload if base64 image is provided
     let imageUrl = 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-default.jpg';
     
-    if (scanData.imageBase64 && scanData.imageBase64.length > 0) {
+    // Check multiple possible locations for imageBase64
+    const imageBase64 = scanData.imageBase64 || 
+                       scanData.image_base64 || 
+                       scanData.detectionResult?.imageBase64 || 
+                       '';
+    
+    console.log('🔍 Found imageBase64:', imageBase64.substring(0, 50) + '...');
+    
+    if (imageBase64 && imageBase64.length > 0) {
       console.log('🖼️ Base64 image found, uploading to Cloudinary...');
       try {
         const uploadResult = await cloudinary.uploader.upload(
-          `data:image/jpeg;base64,${scanData.imageBase64}`,
+          `data:image/jpeg;base64,${imageBase64}`,
           {
             folder: 'coconut-scans',
             public_id: `mobile-scan-${Date.now()}`,
