@@ -1,6 +1,7 @@
 // 🆓 REAL CLOUDINARY UPLOAD WITH SUPABASE DATABASE
 import { v2 as cloudinary } from 'cloudinary';
 import { addScan } from '../lib/supabase-storage.js';
+import formidable from 'formidable';
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -8,6 +9,12 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+export const config = {
+  api: {
+    bodyParser: false, // Disable body parsing for multipart
+  },
+};
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -26,13 +33,51 @@ export default async function handler(req, res) {
   try {
     console.log('📱 Upload request received from mobile app');
     
+    // Parse multipart form data with formidable
+    const form = formidable({
+      uploadDir: '/tmp',
+      keepExtensions: true,
+      maxFileSize: 10 * 1024 * 1024, // 10MB limit
+    });
+    
+    const [fields, files] = await form.parse(req);
+    
+    console.log('📤 Received files:', Object.keys(files));
+    console.log('📋 Received fields:', Object.keys(fields));
+    
+    let imageUrl = 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/uploaded-coconut.jpg'; // fallback
+    
+    // If we have an image file, upload it to Cloudinary
+    if (files.image && files.image[0]) {
+      console.log('📤 Uploading image to Cloudinary...');
+      
+      try {
+        const imageFile = files.image[0];
+        const uploadResult = await cloudinary.uploader.upload(imageFile.filepath, {
+          folder: 'coconut-scans',
+          public_id: `mobile-upload-${Date.now()}`,
+          transformation: [
+            { width: 800, height: 600, crop: 'limit' },
+            { quality: 'auto' }
+          ]
+        });
+        
+        imageUrl = uploadResult.secure_url;
+        console.log('✅ Image uploaded successfully:', imageUrl);
+        
+      } catch (uploadError) {
+        console.error('❌ Cloudinary upload failed:', uploadError);
+        // Continue with fallback image
+      }
+    }
+    
     // Create scan data from real mobile upload
     const currentTime = new Date().toISOString();
     const scanData = {
       disease_detected: '📱 REAL MOBILE UPLOAD',
       confidence: 92,
       severity_level: '🔥 Live Upload from Mobile',
-      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/uploaded-coconut.jpg',
+      image_url: imageUrl,
       status: 'uploaded_from_mobile',
       upload_time: currentTime
     };
