@@ -49,11 +49,14 @@ export default function Dashboard() {
     const healthy = scanData.filter(s => 
       (s.disease_detected || '').toLowerCase().includes('healthy')
     ).length;
+    const diseased = scanData.filter(s => 
+      !(s.disease_detected || '').toLowerCase().includes('healthy') &&
+      (s.disease_detected || '').toLowerCase() !== ''
+    ).length;
     const critical = scanData.filter(s => 
       (s.severity_level || '').toLowerCase().includes('high') ||
       (s.severity_level || '').toLowerCase().includes('critical')
     ).length;
-    const diseased = total - healthy;
 
     setStats({ total, healthy, diseased, critical });
   };
