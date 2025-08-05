@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Coconut Palm Tree Icon -->
+    <group android:scaleX="0.7"
+           android:scaleY="0.7"
+           android:pivotX="54"
+           android:pivotY="54">
+        
+        <!-- Palm Tree Trunk -->
+        <path android:fillColor="#8D6E63"
+              android:pathData="M50,75 C50,72 52,65 48,55 C50,45 52,35 50,25 C54,15 52,25 56,35 C54,45 58,55 56,65 C58,75 54,75 50,75 Z"/>
+        
+        <!-- Large Palm Leaves -->
+        <path android:fillColor="#2E7D32"
+              android:pathData="M54,25 C45,20 35,18 25,22 C30,26 40,28 54,25 Z"/>
+        <path android:fillColor="#2E7D32"
+              android:pathData="M54,25 C63,20 73,18 83,22 C78,26 68,28 54,25 Z"/>
+        <path android:fillColor="#2E7D32"
+              android:pathData="M54,25 C50,15 45,8 40,5 C45,10 50,18 54,25 Z"/>
+        <path android:fillColor="#2E7D32"
+              android:pathData="M54,25 C58,15 63,8 68,5 C63,10 58,18 54,25 Z"/>
+        <path android:fillColor="#2E7D32"
+              android:pathData="M54,25 C40,30 30,40 25,50 C35,35 45,30 54,25 Z"/>
+        <path android:fillColor="#2E7D32"
+              android:pathData="M54,25 C68,30 78,40 83,50 C73,35 63,30 54,25 Z"/>
+        
+        <!-- Coconuts as circles -->
+        <path android:fillColor="#8BC34A"
+              android:pathData="M48,30 C48,27 45,27 45,30 C45,33 48,33 48,30 Z"/>
+        <path android:fillColor="#8BC34A"
+              android:pathData="M63,30 C63,27 60,27 60,30 C60,33 63,33 63,30 Z"/>
+        
+        <!-- Ground grass -->
+        <path android:fillColor="#4CAF50"
+              android:pathData="M30,75 C35,70 40,75 45,70 C50,75 55,70 60,75 C65,70 70,75 78,75 L78,85 L30,85 Z"/>
+              
+    </group>
+</vector>

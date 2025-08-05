@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dwarf Coconut Disease Detector</string>
+    <string name="scan_coconut">Scan Dwarf Coconut Tree</string>
+    <string name="capture_image">Capture Image</string>
+    <string name="analyzing">Analyzing Image...</string>
+    <string name="upload_success">Scan uploaded successfully!</string>
+    <string name="upload_error">Upload failed. Please try again.</string>
+    <string name="no_camera">Camera not available</string>
+    <string name="permission_required">Camera permission required</string>
+</resources>
