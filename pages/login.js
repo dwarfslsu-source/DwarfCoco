@@ -54,7 +54,7 @@ export default function Login() {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <h1>🌴 SLSU Coconut Detector</h1>
+            <h1>🌴 Dwarf Coconut Detector</h1>
             <p>Dwarf Coconut Disease Detection System</p>
           </div>
 
@@ -107,7 +107,7 @@ export default function Login() {
 
           <div className="login-footer">
             <p>🏫 Southern Luzon State University</p>
-            <p>Tayabas Campus - Agricultural Department</p>
+            <p>Tayabas Campus - Agriculture</p>
           </div>
         </div>
 

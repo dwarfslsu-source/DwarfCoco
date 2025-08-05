@@ -4,10 +4,12 @@ import Head from 'next/head';
 
 export default function Dashboard() {
   const [scans, setScans] = useState([]);
+  const [filteredScans, setFilteredScans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedScan, setSelectedScan] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('all');
   const [stats, setStats] = useState({
     total: 0,
     healthy: 0,
@@ -70,6 +72,7 @@ export default function Dashboard() {
       }
       
       setScans(scanArray);
+      setFilteredScans(scanArray);
       calculateStats(scanArray);
       setLoading(false);
     } catch (error) {
@@ -99,6 +102,37 @@ export default function Dashboard() {
     ).length;
 
     setStats({ total, healthy, diseased, critical });
+  };
+
+  const filterScans = (filterType) => {
+    setActiveFilter(filterType);
+    
+    let filtered = [];
+    switch (filterType) {
+      case 'healthy':
+        filtered = scans.filter(s => 
+          (s.disease_detected || '').toLowerCase().includes('healthy')
+        );
+        break;
+      case 'diseased':
+        filtered = scans.filter(s => 
+          !(s.disease_detected || '').toLowerCase().includes('healthy') &&
+          (s.disease_detected || '').toLowerCase() !== ''
+        );
+        break;
+      case 'critical':
+        filtered = scans.filter(s => 
+          (s.severity_level || '').toLowerCase().includes('high') ||
+          (s.severity_level || '').toLowerCase().includes('critical')
+        );
+        break;
+      case 'all':
+      default:
+        filtered = scans;
+        break;
+    }
+    
+    setFilteredScans(filtered);
   };
 
   const formatDate = (timestamp) => {
@@ -146,7 +180,10 @@ export default function Dashboard() {
 
       if (response.ok) {
         // Remove the deleted scan from state
-        setScans(prevScans => prevScans.filter(scan => scan.id !== scanId));
+        const remainingScans = scans.filter(scan => scan.id !== scanId);
+        setScans(remainingScans);
+        setFilteredScans(prev => prev.filter(scan => scan.id !== scanId));
+        calculateStats(remainingScans);
         
         // Recalculate stats
         const updatedScans = scans.filter(scan => scan.id !== scanId);
@@ -194,6 +231,8 @@ export default function Dashboard() {
 
       // Clear the scans from state
       setScans([]);
+      setFilteredScans([]);
+      setActiveFilter('all');
       setStats({ total: 0, healthy: 0, diseased: 0, critical: 0 });
 
       if (errorCount === 0) {
@@ -279,19 +318,19 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="stats-grid">
-          <div className="stat-card">
+          <div className={`stat-card ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => filterScans('all')}>
             <div className="stat-number">{stats.total}</div>
             <div className="stat-label">Total Scans</div>
           </div>
-          <div className="stat-card healthy">
+          <div className={`stat-card healthy ${activeFilter === 'healthy' ? 'active' : ''}`} onClick={() => filterScans('healthy')}>
             <div className="stat-number">{stats.healthy}</div>
             <div className="stat-label">Healthy Trees</div>
           </div>
-          <div className="stat-card diseased">
+          <div className={`stat-card diseased ${activeFilter === 'diseased' ? 'active' : ''}`} onClick={() => filterScans('diseased')}>
             <div className="stat-number">{stats.diseased}</div>
             <div className="stat-label">Diseased Trees</div>
           </div>
-          <div className="stat-card critical">
+          <div className={`stat-card critical ${activeFilter === 'critical' ? 'active' : ''}`} onClick={() => filterScans('critical')}>
             <div className="stat-number">{stats.critical}</div>
             <div className="stat-label">Critical Cases</div>
           </div>
@@ -300,7 +339,7 @@ export default function Dashboard() {
         {/* Recent Scans */}
         <div className="scans-section">
           <div className="scans-header">
-            <h2>Recent Disease Scans</h2>
+            <h2>Recent Disease Scans {activeFilter !== 'all' ? `(${activeFilter})` : ''}</h2>
             {scans.length > 0 && (
               <button 
                 className="clear-all-btn"
@@ -311,15 +350,15 @@ export default function Dashboard() {
               </button>
             )}
           </div>
-          {scans.length === 0 ? (
+          {filteredScans.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">📱</div>
-              <h3>No scans yet</h3>
-              <p>Upload photos from your mobile app to see results here</p>
+              <h3>{activeFilter === 'all' ? 'No scans yet' : `No ${activeFilter} scans found`}</h3>
+              <p>{activeFilter === 'all' ? 'Upload photos from your mobile app to see results here' : `No scans match the ${activeFilter} filter`}</p>
             </div>
           ) : (
             <div className="scans-grid">
-              {scans.slice(0, 12).map((scan, index) => (
+              {filteredScans.slice(0, 12).map((scan, index) => (
                 <div key={scan.id || index} className="scan-card" onClick={() => openScanDetails(scan)}>
                   <div className="scan-image">
                     <img 
@@ -610,12 +649,35 @@ export default function Dashboard() {
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             border: 1px solid #404040;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
           }
 
           .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 40px rgba(0,0,0,0.4);
             border-color: #505050;
+          }
+
+          .stat-card.active {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
+          }
+
+          .stat-card.active.healthy {
+            border-color: #4CAF50;
+            box-shadow: 0 12px 40px rgba(76, 175, 80, 0.3);
+          }
+
+          .stat-card.active.diseased {
+            border-color: #FF9800;
+            box-shadow: 0 12px 40px rgba(255, 152, 0, 0.3);
+          }
+
+          .stat-card.active.critical {
+            border-color: #F44336;
+            box-shadow: 0 12px 40px rgba(244, 67, 54, 0.3);
           }
 
           .stat-number {
