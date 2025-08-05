@@ -1,45 +1,49 @@
-# 📱 Dwarf Coconut Disease Detector - Mobile App Release
+# 📱 Dwarf Coconut Disease Detector - Android Releases
 
-## 🚀 Latest Release: DwarfCoconut-Loading-Fixed.apk
+## 🌴 Latest Release
 
-### 🌟 Features
-- **🔍 AI-Powered Disease Detection** - Advanced machine learning for coconut disease identification
-- **🎨 Modern Dark Theme** - Consistent professional design across all screens
-- **⚡ Enhanced Loading Animation** - Engaging 5-stage AI analysis visualization
-- **🏫 SLSU Branding** - Unity-style splash screen with Southern Luzon State University branding
-- **📤 Cloud Upload** - Upload results to dwarf-cocos.vercel.app
-- **📱 Material Design 3** - Modern Android UI components
+### **DwarfCoconut-Loading-Fixed.apk** 
+📅 **Released**: August 5, 2025  
+🔥 **Latest Version** - Complete App with Enhanced Features
 
-### 🔧 Installation
-1. **Download** the APK file
-2. **Enable** "Install from unknown sources" in Android settings
-3. **Install** the APK
-4. **Launch** and start detecting diseases!
+#### ✨ Features:
+- **🚀 Unity-Style Splash Screen** with SLSU branding and student credits
+- **👋 Minimal Welcome Screen** with functional "Learn More" dialog
+- **🎨 Modern Dark Theme** across all screens
+- **🔄 Enhanced Loading Animation** during AI analysis (5-stage process)
+- **🤖 AI Disease Detection** with confidence scoring
+- **☁️ Cloud Upload** to dwarf-cocos.vercel.app
+- **📊 Detailed Results** with recommendations and severity levels
 
-### 🎯 Usage
-1. **Splash Screen** - Watch the SLSU Unity-style loading
-2. **Welcome Screen** - Tap "Start Detecting" or "Learn More"
-3. **Main App** - Choose Camera or Gallery
-4. **AI Analysis** - Watch the 5-stage loading animation
-5. **Results** - Get detailed disease analysis and recommendations
+#### 🎯 AI Analysis Stages:
+1. 🔍 Analyzing image... *(Preprocessing image data...)*
+2. 🤖 Running AI model... *(Neural network processing...)*
+3. 🧠 Detecting patterns... *(Identifying leaf features...)*
+4. 📊 Calculating confidence... *(Analyzing disease markers...)*
+5. ✨ Finalizing results... *(Generating recommendations...)*
 
-### 🏗️ Technical Details
-- **Platform**: Android 7.0+ (API 24+)
-- **Size**: ~15MB
-- **AI Model**: Enhanced TensorFlow Lite model
-- **Languages**: Kotlin, Java
-- **Architecture**: MVVM with Material Design 3
-
-### 👨‍💻 Developed By
-**SLSU Tayabas Campus BSIT Students:**
-- Jeremie Cabile
-- Dionna Oabel  
-- Shemarc Beltran
-
-### 🔒 Security
-- Secure cloud integration with Supabase
-- Safe image processing with TensorFlow Lite
-- Privacy-focused design
+#### 🏫 Developed by:
+**Southern Luzon State University - Tayabas Campus**  
+BSIT Students: Jeremie Cabile, Dionna Oabel, Shemarc Beltran
 
 ---
-**© 2025 Southern Luzon State University - Tayabas Campus**
+
+## 📥 Installation Instructions:
+
+1. **Enable Unknown Sources** in Android Settings → Security
+2. **Download** the APK file to your Android device
+3. **Tap the APK** file to install
+4. **Allow installation** when prompted
+5. **Open the app** and start detecting coconut diseases!
+
+---
+
+## 🔗 Related Links:
+
+- **Web Dashboard**: [dwarf-cocos.vercel.app](https://dwarf-cocos.vercel.app)
+- **GitHub Repository**: [dwarfslsu-source/DwarfCoco](https://github.com/dwarfslsu-source/DwarfCoco)
+
+---
+
+## 🛡️ Security Note:
+This app uses secure API credentials updated on August 5, 2025 after a security migration.
