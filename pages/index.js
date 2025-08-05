@@ -180,7 +180,7 @@ export default function Dashboard() {
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
             color: white;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
           }
@@ -188,7 +188,7 @@ export default function Dashboard() {
             width: 40px;
             height: 40px;
             border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
+            border-top: 4px solid #2196F3;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 16px;
@@ -419,15 +419,16 @@ export default function Dashboard() {
         <style jsx>{`
           .dashboard {
             min-height: 100vh;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            color: #1f2937;
+            color: #ffffff;
           }
 
           .header {
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #2d2d2d 0%, #1f1f1f 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             margin-bottom: 2rem;
+            border-bottom: 1px solid #404040;
           }
 
           .header-content {
@@ -452,24 +453,26 @@ export default function Dashboard() {
           }
 
           .download-btn {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            background: linear-gradient(135deg, #2196F3, #1976D2);
             color: white;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 12px;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.9rem;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            border: 1px solid rgba(33, 150, 243, 0.3);
           }
 
           .download-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-            background: linear-gradient(135deg, #2563eb, #1e40af);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            border-color: rgba(33, 150, 243, 0.5);
           }
 
           @media (max-width: 768px) {
@@ -493,7 +496,7 @@ export default function Dashboard() {
             margin: 0;
             font-size: 2.5rem;
             font-weight: 600;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -501,7 +504,7 @@ export default function Dashboard() {
 
           .header p {
             margin: 0.5rem 0 0 0;
-            color: #6b7280;
+            color: #b0b0b0;
             font-size: 1.1rem;
           }
 
@@ -515,38 +518,39 @@ export default function Dashboard() {
           }
 
           .stat-card {
-            background: white;
+            background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
             padding: 2rem;
             border-radius: 16px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid #f3f4f6;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid #404040;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
           }
 
           .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            border-color: #505050;
           }
 
           .stat-number {
             font-size: 3rem;
             font-weight: 700;
-            color: #374151;
+            color: #ffffff;
             line-height: 1;
           }
 
           .stat-label {
             font-size: 0.9rem;
-            color: #6b7280;
+            color: #b0b0b0;
             margin-top: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
 
-          .stat-card.healthy .stat-number { color: #10b981; }
-          .stat-card.diseased .stat-number { color: #f59e0b; }
-          .stat-card.critical .stat-number { color: #ef4444; }
+          .stat-card.healthy .stat-number { color: #4CAF50; }
+          .stat-card.diseased .stat-number { color: #FF9800; }
+          .stat-card.critical .stat-number { color: #F44336; }
 
           .scans-section {
             max-width: 1200px;
@@ -558,7 +562,7 @@ export default function Dashboard() {
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 2rem;
-            color: #374151;
+            color: #ffffff;
             text-align: center;
           }
 
@@ -577,22 +581,24 @@ export default function Dashboard() {
           }
 
           .clear-all-btn {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            background: linear-gradient(135deg, #F44336, #D32F2F);
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+            border: 1px solid rgba(244, 67, 54, 0.3);
           }
 
           .clear-all-btn:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            background: linear-gradient(135deg, #D32F2F, #B71C1C);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+            border-color: rgba(244, 67, 54, 0.5);
           }
 
           .clear-all-btn:active {
@@ -602,9 +608,10 @@ export default function Dashboard() {
           .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            background: white;
+            background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
             border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid #404040;
           }
 
           .empty-icon {
@@ -614,12 +621,12 @@ export default function Dashboard() {
 
           .empty-state h3 {
             margin: 0 0 0.5rem 0;
-            color: #374151;
+            color: #ffffff;
             font-weight: 600;
           }
 
           .empty-state p {
-            color: #6b7280;
+            color: #b0b0b0;
             margin: 0;
           }
 
@@ -630,24 +637,25 @@ export default function Dashboard() {
           }
 
           .scan-card {
-            background: white;
+            background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid #f3f4f6;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid #404040;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
           }
 
           .scan-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+            border-color: #505050;
           }
 
           .scan-image {
             position: relative;
             height: 200px;
             overflow: hidden;
-            background: #f9fafb;
+            background: #1a1a1a;
           }
 
           .scan-image img {
@@ -661,7 +669,7 @@ export default function Dashboard() {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: rgba(239, 68, 68, 0.9);
+            background: rgba(244, 67, 54, 0.9);
             border: none;
             border-radius: 50%;
             width: 32px;
@@ -675,14 +683,14 @@ export default function Dashboard() {
             opacity: 0;
             transform: scale(0.8);
             transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
           }
 
           .delete-btn:hover {
-            background: rgba(220, 38, 38, 0.95);
-            transform: scale(1);
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            background: rgba(211, 47, 47, 0.95);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
           }
 
           .scan-card:hover .delete-btn {
@@ -701,13 +709,13 @@ export default function Dashboard() {
           .scan-disease {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #374151;
+            color: #ffffff;
             margin-bottom: 0.5rem;
           }
 
           .scan-confidence {
             font-size: 0.9rem;
-            color: #6b7280;
+            color: #b0b0b0;
             margin-bottom: 0.5rem;
           }
 
@@ -721,14 +729,14 @@ export default function Dashboard() {
 
           .scan-date {
             font-size: 0.8rem;
-            color: #9ca3af;
+            color: #808080;
           }
 
           .click-hint {
             font-size: 0.7rem;
-            color: #3b82f6;
+            color: #2196F3;
             margin-top: 0.5rem;
-            opacity: 0.7;
+            opacity: 0.8;
             text-align: center;
             font-style: italic;
           }
@@ -744,22 +752,24 @@ export default function Dashboard() {
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             padding: 1rem;
+            backdrop-filter: blur(8px);
           }
 
           .modal-content {
-            background: white;
+            background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
             border-radius: 20px;
             max-width: 800px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            border: 1px solid #404040;
           }
 
           .modal-header {
@@ -767,13 +777,13 @@ export default function Dashboard() {
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem 2rem;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px solid #404040;
           }
 
           .modal-header h2 {
             margin: 0;
             font-size: 1.5rem;
-            color: #1f2937;
+            color: #ffffff;
           }
 
           .modal-close {
@@ -781,7 +791,7 @@ export default function Dashboard() {
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #6b7280;
+            color: #b0b0b0;
             padding: 0;
             width: 32px;
             height: 32px;
@@ -793,8 +803,8 @@ export default function Dashboard() {
           }
 
           .modal-close:hover {
-            background: #f3f4f6;
-            color: #374151;
+            background: #404040;
+            color: #ffffff;
           }
 
           .modal-body {
@@ -825,12 +835,12 @@ export default function Dashboard() {
 
           .detail-label {
             font-weight: 600;
-            color: #374151;
+            color: #ffffff;
             font-size: 0.9rem;
           }
 
           .detail-value {
-            color: #6b7280;
+            color: #b0b0b0;
             font-size: 1rem;
           }
 
@@ -842,21 +852,21 @@ export default function Dashboard() {
 
           .confidence-percentage {
             font-weight: 600;
-            color: #1f2937;
+            color: #ffffff;
             font-size: 1.1rem;
           }
 
           .confidence-progress {
             width: 100%;
             height: 8px;
-            background: #f3f4f6;
+            background: #404040;
             border-radius: 4px;
             overflow: hidden;
           }
 
           .confidence-fill {
             height: 100%;
-            background: linear-gradient(90deg, #10b981, #059669);
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
             transition: width 0.3s ease;
           }
 
@@ -873,20 +883,21 @@ export default function Dashboard() {
 
           .analysis-id {
             font-family: 'Courier New', monospace;
-            background: #f9fafb;
+            background: #404040;
             padding: 0.5rem;
             border-radius: 6px;
             font-size: 0.9rem;
+            color: #ffffff;
           }
 
           .recommendations, .treatment {
-            border-top: 1px solid #f3f4f6;
+            border-top: 1px solid #404040;
             padding-top: 1rem;
           }
 
           .recommendations .detail-value,
           .treatment .detail-value {
-            color: #374151;
+            color: #ffffff;
             line-height: 1.6;
           }
 
@@ -895,13 +906,13 @@ export default function Dashboard() {
             justify-content: flex-end;
             gap: 1rem;
             padding: 1.5rem 2rem;
-            border-top: 1px solid #f3f4f6;
-            background: #f9fafb;
+            border-top: 1px solid #404040;
+            background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
           }
 
           .modal-btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
@@ -910,21 +921,23 @@ export default function Dashboard() {
           }
 
           .modal-btn.secondary {
-            background: #f3f4f6;
-            color: #374151;
+            background: #404040;
+            color: #ffffff;
+            border: 1px solid #505050;
           }
 
           .modal-btn.secondary:hover {
-            background: #e5e7eb;
+            background: #505050;
+            border-color: #606060;
           }
 
           .modal-btn.danger {
-            background: #ef4444;
+            background: #F44336;
             color: white;
           }
 
           .modal-btn.danger:hover {
-            background: #dc2626;
+            background: #D32F2F;
           }
 
           @media (max-width: 768px) {
