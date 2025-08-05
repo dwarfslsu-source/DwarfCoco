@@ -220,7 +220,7 @@ export default function Dashboard() {
             </div>
             <div className="header-actions">
               <a 
-                href="https://www.mediafire.com/file/heiwi0erztaai6q/app-debug.apk/file"
+                href="https://github.com/dwarfslsu-source/DwarfCoco/raw/refs/heads/main/releases/DwarfCoconut-Loading-Fixed.apk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="download-btn"
