@@ -1,8 +1,23 @@
-// Mobile upload endpoint - specifically for Android APK
+// api/mobile-upload.js - Handle real mobile uploads with images
 import { addScan } from '../lib/supabase-storage.js';
+import multiparty from 'multiparty';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary - Updated secure credentials
+cloudinary.config({
+  cloud_name: 'dggotlpbg',
+  api_key: '674778493278924',
+  api_secret: 'YAwZgGb4in1FrLF8O7oAlLco7zU'
+});
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async function handler(req, res) {
-  // Enable CORS for mobile app
+  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -12,20 +27,49 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      success: false, 
-      error: 'Only POST method allowed' 
-    });
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
   try {
-    console.log('📱 Mobile APK upload received');
-    console.log('📋 Request body:', JSON.stringify(req.body, null, 2));
+    console.log('📱 Real mobile upload with image received');
     
-    const mobileData = req.body;
+    // Parse multipart form data
+    const form = new multiparty.Form();
     
-    // Disease name mapping
-    const diseaseMap = {
+    const parsePromise = new Promise((resolve, reject) => {
+      const fields = {};
+      const files = {};
+      
+      form.on('field', (name, value) => {
+        fields[name] = value;
+      });
+      
+      form.on('part', (part) => {
+        if (part.filename) {
+          const chunks = [];
+          part.on('data', (chunk) => chunks.push(chunk));
+          part.on('end', () => {
+            files[part.name] = {
+              buffer: Buffer.concat(chunks),
+              filename: part.filename,
+              mimetype: part.headers['content-type']
+            };
+          });
+        }
+      });
+      
+      form.on('close', () => resolve({ fields, files }));
+      form.on('error', reject);
+    });
+    
+    form.parse(req);
+    const { fields, files } = await parsePromise;
+    
+    console.log('📋 Parsed fields:', fields);
+    console.log('🖼️ Files received:', Object.keys(files));
+    
+    // Map disease names
+    const diseaseNameMap = {
       'CCI_Caterpillars': 'Caterpillar Infestation',
       'CCI_Leaflets': 'Coconut Leaflet Disease', 
       'Healthy_Leaves': 'Healthy Coconut',
@@ -34,67 +78,80 @@ export default async function handler(req, res) {
       'WCLWD_Yellowing': 'Leaf Yellowing Disease'
     };
     
-    // Extract disease detection from mobile data
-    let disease = 'Unknown';
-    let confidence = 0;
+    // Extract scan data
+    const diseaseDetected = fields.diseaseDetected || fields.disease_detected || 'Unknown';
+    const confidence = parseFloat(fields.confidence || 0.0);
+    const friendlyDiseaseName = diseaseNameMap[diseaseDetected] || diseaseDetected;
     
-    // Try multiple possible data formats
-    if (mobileData.detectionResult?.primaryDisease) {
-      disease = mobileData.detectionResult.primaryDisease;
-      confidence = mobileData.detectionResult.confidence || 0;
-    } else if (mobileData.diseaseDetected) {
-      disease = mobileData.diseaseDetected;
-      confidence = mobileData.confidence || 0;
-    } else if (mobileData.primaryDisease) {
-      disease = mobileData.primaryDisease;
-      confidence = mobileData.confidence || 0;
-    } else if (mobileData.disease) {
-      disease = mobileData.disease;
-      confidence = mobileData.confidence || 0;
+    let imageUrl = 'https://res.cloudinary.com/dggotlpbg/image/upload/v1/coconut-scans/mobile-default.jpg';
+    
+    // Upload image to Cloudinary if provided
+    if (files.image && files.image.buffer) {
+      console.log('⬆️ Uploading image to Cloudinary...');
+      try {
+        const uploadResult = await new Promise((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              resource_type: 'image',
+              folder: 'coconut-scans',
+              public_id: `mobile-scan-${Date.now()}`,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          ).end(files.image.buffer);
+        });
+        
+        imageUrl = uploadResult.secure_url;
+        console.log('✅ Image uploaded successfully:', imageUrl);
+      } catch (uploadError) {
+        console.error('❌ Image upload failed:', uploadError);
+        // Continue with default image
+      }
     }
     
-    const friendlyName = diseaseMap[disease] || disease;
-    const confidencePercent = Math.round(confidence * 100);
-    const deviceId = mobileData.device_id || mobileData.deviceId || `mobile_${Date.now()}`;
-    
-    console.log(`✅ Detected: ${disease} -> ${friendlyName} (${confidencePercent}%)`);
-    
-    // Create scan record
+    const currentTime = new Date().toISOString();
     const scanData = {
-      disease_detected: friendlyName,
-      confidence: confidencePercent,
-      severity_level: confidence > 0.8 ? 'High' : confidence > 0.5 ? 'Medium' : 'Low',
-      image_url: 'https://res.cloudinary.com/dggotlpbg/image/upload/v1/coconut-scans/mobile-upload.jpg',
-      status: 'Mobile Upload',
-      upload_time: new Date().toISOString(),
-      mobile_device_id: deviceId,
-      mobile_disease_code: disease,
-      raw_mobile_data: mobileData
+      disease_detected: friendlyDiseaseName,
+      confidence: Math.round(confidence * 100),
+      severity_level: confidence > 0.8 ? 'high' : confidence > 0.5 ? 'medium' : 'low',
+      image_url: imageUrl,
+      status: 'REAL MOBILE UPLOAD',
+      upload_time: currentTime,
+      analysis_complete: true,
+      mobile_disease_code: diseaseDetected,
+      raw_mobile_data: fields
     };
-    
+
     // Save to database
-    console.log('💾 Saving to Supabase...');
+    console.log('💾 Saving scan to database...');
     const newScan = await addScan(scanData);
-    console.log('🎉 SUCCESS - Mobile scan saved:', newScan.id);
-    
+    console.log('✅ Mobile scan saved successfully:', newScan);
+
     return res.status(200).json({
       success: true,
-      message: `SUCCESS: ${friendlyName} detected!`,
+      message: `Mobile scan successful: ${friendlyDiseaseName} detected!`,
       data: newScan,
       scan_id: newScan.id,
-      ai_result: friendlyName,
-      confidence: `${confidencePercent}%`,
-      mobile_detection: disease,
-      timestamp: new Date().toISOString()
+      timestamp: newScan.timestamp,
+      image_url: imageUrl,
+      ai_result: friendlyDiseaseName,
+      confidence: `${Math.round(confidence * 100)}%`,
+      mobile_detection: diseaseDetected
     });
-    
+
   } catch (error) {
     console.error('❌ Mobile upload error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Upload failed',
-      message: error.message,
-      details: error.stack
+      message: 'Mobile upload failed: ' + error.message,
+      error_type: error.name,
+      debug_info: {
+        timestamp: new Date().toISOString(),
+        error_message: error.message,
+        stack: error.stack
+      }
     });
   }
 }
