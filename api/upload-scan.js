@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       disease_detected: friendlyDiseaseName,
       confidence: Math.round(confidence * 100),
       severity_level: confidence > 0.8 ? 'high' : confidence > 0.5 ? 'medium' : 'low',
-      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-default.jpg',
+      image_url: 'https://res.cloudinary.com/dggotlpbg/image/upload/v1/coconut-scans/mobile-default.jpg',
       status: 'BASIC UPLOAD',
       upload_time: currentTime,
       analysis_complete: true,

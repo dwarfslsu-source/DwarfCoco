@@ -54,7 +54,7 @@ export default async function handler(req, res) {
       disease_detected: friendlyName,
       confidence: Math.round(confidence * 100),
       severity_level: confidence > 0.8 ? 'high' : confidence > 0.5 ? 'medium' : 'low',
-      image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-upload.jpg',
+      image_url: 'https://res.cloudinary.com/dggotlpbg/image/upload/v1/coconut-scans/mobile-upload.jpg',
       mobile_code: disease,
       raw_data: mobileData
     };

@@ -37,7 +37,7 @@ export default async function handler(req, res) {
         disease_detected: 'Database Connection Issue',
         confidence: 0,
         severity_level: '⚠️ Fallback Data',
-        image_url: 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/healthy-sample.jpg'
+        image_url: 'https://res.cloudinary.com/dggotlpbg/image/upload/v1/coconut-scans/healthy-sample.jpg'
       }
     ];
     

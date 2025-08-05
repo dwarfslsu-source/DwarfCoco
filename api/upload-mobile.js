@@ -3,11 +3,11 @@ import { addScan } from '../lib/supabase-storage.js';
 import multiparty from 'multiparty';
 import { v2 as cloudinary } from 'cloudinary';
 
-// Configure Cloudinary
+// Configure Cloudinary - Updated secure credentials
 cloudinary.config({
-  cloud_name: 'dpezf22nd',
-  api_key: '779179365417543',
-  api_secret: 'FwvqVHp_cPMaFp1_PrVV5wwDkJE'
+  cloud_name: 'dggotlpbg',
+  api_key: '674778493278924',
+  api_secret: 'YAwZgGb4in1FrLF8O7oAlLco7zU'
 });
 
 export const config = {
@@ -83,7 +83,7 @@ export default async function handler(req, res) {
     const confidence = parseFloat(fields.confidence || 0.0);
     const friendlyDiseaseName = diseaseNameMap[diseaseDetected] || diseaseDetected;
     
-    let imageUrl = 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-default.jpg';
+    let imageUrl = 'https://res.cloudinary.com/dggotlpbg/image/upload/v1/coconut-scans/mobile-default.jpg';
     
     // Upload image to Cloudinary if provided
     if (files.image && files.image.buffer) {

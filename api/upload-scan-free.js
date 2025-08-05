@@ -3,11 +3,11 @@
 import { addScan } from '../lib/supabase-storage.js';
 import { v2 as cloudinary } from 'cloudinary';
 
-// Configure Cloudinary
+// Configure Cloudinary - NEW SECURE CREDENTIALS
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dpezf22nd',
-  api_key: process.env.CLOUDINARY_API_KEY || '779179365417543',
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'FwvqVHp_cPMaFp1_PrVV5wwDkJE'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 export default async function handler(req, res) {
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     const friendlyDiseaseName = diseaseNameMap[diseaseDetected] || diseaseDetected;
     
     // Handle image upload if base64 image is provided
-    let imageUrl = 'https://res.cloudinary.com/dpezf22nd/image/upload/v1/coconut-scans/mobile-default.jpg';
+    let imageUrl = 'https://res.cloudinary.com/dggotlpbg/image/upload/v1/coconut-scans/mobile-default.jpg';
     
     // Check multiple possible locations for imageBase64
     const imageBase64 = scanData.imageBase64 || 
