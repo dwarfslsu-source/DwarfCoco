@@ -35,7 +35,23 @@ export default function Dashboard() {
     }
   }, [router]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const token = localStorage.getItem('authToken');
+    
+    try {
+      // Call logout API to mark session as inactive
+      await fetch('/api/auth?action=logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+    } catch (error) {
+      console.error('Logout API error:', error);
+    }
+    
+    // Clear local storage and redirect
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     router.push('/login');
