@@ -166,7 +166,7 @@ export default function Dashboard() {
     }
 
     try {
-      const response = await fetch(`/api/delete-scan?id=${scanId}`, {
+      const response = await fetch(`/api/admin?action=delete&id=${scanId}`, {
         method: 'DELETE',
       });
 
@@ -215,7 +215,7 @@ export default function Dashboard() {
       // Delete all scans one by one
       for (const scan of scans) {
         try {
-          const response = await fetch(`/api/delete-scan?id=${scan.id}`, {
+          const response = await fetch(`/api/admin?action=delete&id=${scan.id}`, {
             method: 'DELETE',
           });
           

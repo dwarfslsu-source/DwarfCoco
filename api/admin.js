@@ -1,6 +1,8 @@
 ﻿// api/admin.js - Consolidated admin operations
 // Handles: delete scans, health checks, system info
+// Replaces: delete-scan.js, health.js
 import { createClient } from '@supabase/supabase-js';
+import { deleteScan } from '../lib/supabase-storage.js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -56,35 +58,16 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, message: 'Scan ID required' });
         }
 
-        console.log(' Deleting scan:', id);
+        console.log('🗑️ Deleting scan:', id);
 
-        const { data: deleteData, error: deleteError } = await supabase
-          .from('scans')
-          .delete()
-          .eq('id', id)
-          .select();
+        // Delete the scan from database using lib function
+        await deleteScan(id);
 
-        if (deleteError) {
-          console.error(' Delete error:', deleteError);
-          return res.status(500).json({
-            success: false,
-            message: 'Failed to delete scan',
-            error: deleteError.message
-          });
-        }
-
-        if (!deleteData || deleteData.length === 0) {
-          return res.status(404).json({
-            success: false,
-            message: 'Scan not found'
-          });
-        }
-
-        console.log(' Scan deleted successfully');
+        console.log('✅ Scan deleted successfully');
         return res.status(200).json({
           success: true,
           message: 'Scan deleted successfully',
-          deleted_scan: deleteData[0]
+          id: id
         });
 
       case 'stats':
