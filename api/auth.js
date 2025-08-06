@@ -1,23 +1,11 @@
 // Consolidated auth API - handles login, logout, verify with Supabase
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client with better error handling
+// Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-console.log('🔧 Environment check:', {
-  hasUrl: !!supabaseUrl,
-  hasKey: !!supabaseServiceKey,
-  url: supabaseUrl ? supabaseUrl.substring(0, 30) + '...' : 'missing'
-});
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('❌ Missing Supabase environment variables');
-}
-
-const supabase = supabaseUrl && supabaseServiceKey 
-  ? createClient(supabaseUrl, supabaseServiceKey)
-  : null;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -27,23 +15,6 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
-  }
-
-  // Debug environment variables
-  console.log('Environment check:', {
-    hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    method: req.method,
-    action: req.query.action
-  });
-
-  // Check if environment variables are missing
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('Missing environment variables!');
-    return res.status(500).json({ 
-      error: 'Server configuration error',
-      message: 'Environment variables not configured'
-    });
   }
 
   const { action } = req.query;

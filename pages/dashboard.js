@@ -305,7 +305,7 @@ export default function Dashboard() {
                 </button>
               </div>
               <a 
-                href="https://github.com/dwarfslsu-source/DwarfCoco/raw/refs/heads/main/releases/DwarfCoconut-Loading-Fixed.apk"
+                href="https://download1336.mediafire.com/bmye5p223csgMH4mDVFxB4ffq_Zy04I13e9K3_3Hew3kNiqluMaIooXTwSIZFzbGwH27B79puSKxufnHUjUlNS-xyWBe-0Rd8axMbeHgTQhzpdE414Gm9OW9io-bWfTAwFlu4j0tn4okyB-K79RTXZ452B0uL1iDj4XCb5-I_vdq/3isrxlr6a3egcno/DwarfCoconut-Loading-Fixed.apk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="download-btn"
